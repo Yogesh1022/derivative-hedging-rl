@@ -1,0 +1,132 @@
+# Environment Settings
+environment: development
+debug: true
+seed: 42
+
+# Database Configuration
+database:
+  host: localhost
+  port: 5432
+  name: hedge_rl_db
+  user: hedge_rl
+  password: hedge_rl_password
+
+# Redis Configuration
+redis:
+  host: localhost
+  port: 6379
+  db: 0
+
+# API Configuration
+api:
+  host: 0.0.0.0
+  port: 8000
+  cors_origins:
+    - http://localhost:3000
+    - http://localhost:8080
+
+# Hedging Environment Configuration
+environment_config:
+  ticker: SPY
+  option_type: call  # call or put
+  strike: 450
+  maturity_days: 30
+  position_size: -100  # Negative for short position
+  transaction_cost_bps: 5  # Basis points
+  slippage_bps: 2
+  initial_cash: 100000
+
+# Reward Function Configuration
+reward:
+  lambda_pnl: 1.0
+  lambda_transaction: 0.01
+  lambda_drawdown: 0.1
+  lambda_variance: 0.05
+  clip_max: 10.0
+  clip_min: -10.0
+
+# RL Agent Hyperparameters
+agent:
+  algorithm: PPO  # DQN, PPO, SAC, DDPG
+  learning_rate: 0.0003
+  gamma: 0.99
+  batch_size: 256
+  buffer_size: 100000
+  policy_network:
+    - 256
+    - 256
+    - 128
+  value_network:
+    - 256
+    - 256
+    - 128
+
+# Training Configuration
+training:
+  total_timesteps: 500000
+  eval_freq: 10000
+  n_eval_episodes: 100
+  save_freq: 50000
+  log_interval: 1000
+  use_wandb: false 
+  use_tensorboard: true
+
+# Data Configuration
+data:
+  train_start: "2015-01-01"
+  train_end: "2022-12-31"
+  test_start: "2023-01-01"
+  test_end: "2024-12-31"
+  features:
+    - S           # Spot price
+    - K           # Strike
+    - T           # Time to maturity
+    - sigma       # Implied volatility
+    - delta       # Option delta
+    - gamma       # Option gamma
+    - vega        # Option vega
+    - position    # Current hedge position
+    - pnl         # Cumulative PnL
+
+# Black-Scholes Configuration
+pricing:
+  risk_free_rate: 0.02
+  dividend_yield: 0.0
+
+# Synthetic Data Generation
+synthetic:
+  model: gbm  # gbm or heston
+  n_paths: 10000
+  S0: 100
+  mu: 0.05
+  sigma: 0.2
+  T: 0.238  # 60 trading days / 252
+
+# Heston Model Parameters (if using heston)
+heston:
+  V0: 0.04
+  kappa: 2.0
+  theta: 0.04
+  xi: 0.3
+  rho: -0.7
+
+# Evaluation Metrics
+evaluation:
+  metrics:
+    - sharpe_ratio
+    - max_drawdown
+    - total_pnl
+    - win_rate
+    - avg_trade_pnl
+    - value_at_risk
+    - conditional_var
+    - hedge_error_mean
+    - hedge_error_std
+    - transaction_cost_total
+    - num_rebalances
+
+# Logging
+logging:
+  level: INFO
+  format: json
+  file: logs/training.log

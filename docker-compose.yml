@@ -1,0 +1,142 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: hedge_rl_postgres
+    environment:
+      POSTGRES_USER: hedge_rl
+      POSTGRES_PASSWORD: hedge_rl_password
+      POSTGRES_DB: hedge_rl_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hedge_rl"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hedge_rl_network
+
+  # Redis Cache & Message Broker
+  redis:
+    image: redis:7-alpine
+    container_name: hedge_rl_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hedge_rl_network
+
+  # FastAPI Backend
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hedge_rl_api
+    environment:
+      DATABASE_URL: postgresql://hedge_rl:hedge_rl_password@postgres:5432docker-compose down/hedge_rl_db
+      REDIS_URL: redis://redis:6379/0
+      ENVIRONMENT: development
+      DEBUG: "true"
+      SECRET_KEY: your-secret-key-change-in-production
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - hedge_rl_network
+
+  # Celery Worker for Background Tasks
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hedge_rl_celery
+    environment:
+      DATABASE_URL: postgresql://hedge_rl:hedge_rl_password@postgres:5432/hedge_rl_db
+      REDIS_URL: redis://redis:6379/0
+      ENVIRONMENT: development
+      DEBUG: "true"
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A src.tasks.celery_app worker --loglevel=info
+    networks:
+      - hedge_rl_network
+
+  # Celery Beat for Scheduled Tasks
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hedge_rl_celery_beat
+    environment:
+      DATABASE_URL: postgresql://hedge_rl:hedge_rl_password@postgres:5432/hedge_rl_db
+      REDIS_URL: redis://redis:6379/0
+      ENVIRONMENT: development
+      DEBUG: "true"
+    volumes:
+      - .:/app
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A src.tasks.celery_app beat --loglevel=info
+    networks:
+      - hedge_rl_network
+
+  # Flower - Celery Monitoring
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hedge_rl_flower
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery_worker
+    command: celery -A src.tasks.celery_app flower --port=5555
+    networks:
+      - hedge_rl_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  hedge_rl_network:
+    driver: bridge
