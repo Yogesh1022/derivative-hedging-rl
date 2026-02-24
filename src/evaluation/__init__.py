@@ -1,6 +1,15 @@
-"""Placeholder for evaluation module."""
+"""Evaluation framework for hedging strategies."""
 
-# Phase 4: Evaluation metrics and backtesting will go here
-# - Performance Metrics (Sharpe, Drawdown, etc.)
-# - Backtesting Engine
-# - Visualization Tools
+from src.evaluation.metrics import (
+    EpisodeResult,
+    BacktestResult,
+    HedgingEvaluator,
+    PerformanceMetrics,
+)
+
+__all__ = [
+    "EpisodeResult",
+    "BacktestResult",
+    "HedgingEvaluator",
+    "PerformanceMetrics",
+]

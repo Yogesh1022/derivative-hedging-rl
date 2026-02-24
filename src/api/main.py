@@ -7,7 +7,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from prometheus_client import make_asgi_app
 
-from src.api.routes import auth, datasets, evaluations, experiments, health, models
+from src.api.routes import (
+    auth,
+    datasets,
+    environments,
+    baselines,
+    evaluations,
+    experiments,
+    health,
+    models,
+)
 from src.utils.config import get_settings
 from src.utils.logger import setup_logger
 
@@ -54,6 +63,8 @@ if settings.ENABLE_METRICS:
 app.include_router(health.router, prefix="/api/v1", tags=["Health"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(datasets.router, prefix="/api/v1/datasets", tags=["Datasets"])
+app.include_router(environments.router, prefix="/api/v1", tags=["Environments"])
+app.include_router(baselines.router, prefix="/api/v1", tags=["Baselines"])
 app.include_router(experiments.router, prefix="/api/v1/experiments", tags=["Experiments"])
 app.include_router(models.router, prefix="/api/v1/models", tags=["Models"])
 app.include_router(evaluations.router, prefix="/api/v1/evaluations", tags=["Evaluations"])

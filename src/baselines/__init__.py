@@ -1,6 +1,17 @@
-"""Placeholder for baselines module."""
+"""Baseline hedging strategies module."""
 
-# Phase 2: Baseline hedging strategies will go here
-# - Delta Hedging
-# - Delta-Gamma Hedging
-# - Delta-Gamma-Vega Hedging
+from src.baselines.hedging_strategies import (
+    BaseHedgingStrategy,
+    DeltaHedging,
+    DeltaGammaHedging,
+    DeltaGammaVegaHedging,
+    MinimumVarianceHedging,
+)
+
+__all__ = [
+    "BaseHedgingStrategy",
+    "DeltaHedging",
+    "DeltaGammaHedging",
+    "DeltaGammaVegaHedging",
+    "MinimumVarianceHedging",
+]

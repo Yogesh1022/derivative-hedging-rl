@@ -4,6 +4,7 @@ __version__ = "0.3.0"
 __author__ = "Your Name"
 __email__ = "your.email@example.com"
 
-from src.utils.config import load_config
+# Don't import config here to avoid triggering settings initialization during imports
+# Import it explicitly where needed instead
 
-__all__ = ["load_config"]
+__all__ = []

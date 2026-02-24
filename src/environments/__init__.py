@@ -1,6 +1,5 @@
-"""Placeholder for environments module."""
+"""RL Environment module."""
 
-# Phase 2: RL Environment implementations will go here
-# - Hedging Environment (Gymnasium-compatible)
-# - Market Simulator
-# - Reward Functions
+from src.environments.hedging_env import OptionHedgingEnv
+
+__all__ = ["OptionHedgingEnv"]
