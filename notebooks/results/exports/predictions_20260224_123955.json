@@ -1,0 +1,267 @@
+{
+  "export_time": "2026-02-24T12:39:55.433698",
+  "model_type": "PPO",
+  "total_predictions": 200,
+  "predictions": [
+    {
+      "prediction_id": 0,
+      "timestamp": "2026-02-24T12:39:55.424508",
+      "input": {
+        "spot_price": 98.74540118847362,
+        "strike": 100.0,
+        "time_to_maturity": 0.4452413703502375,
+        "volatility": 0.2167783132719253,
+        "option_type": "put",
+        "current_hedge": 0.6560021367270265
+      },
+      "prediction": {
+        "target_hedge_ratio": -0.6374590992927551,
+        "shares_to_trade": -0.6374590992927551,
+        "trade_value": -62.94615450090615,
+        "confidence": 1.0
+      },
+      "benchmark": {
+        "black_scholes_delta": -0.44474647013869895,
+        "deviation": -0.19271262915405618
+      },
+      "metadata": {
+        "scenario_type": "standard",
+        "moneyness": 0.9874540118847362
+      }
+    },
+    {
+      "prediction_id": 1,
+      "timestamp": "2026-02-24T12:39:55.424598",
+      "input": {
+        "spot_price": 104.50714306409915,
+        "strike": 100.0,
+        "time_to_maturity": 0.3493192507310232,
+        "volatility": 0.2432305830593579,
+        "option_type": "put",
+        "current_hedge": 0.4351980627406143
+      },
+      "prediction": {
+        "target_hedge_ratio": -0.6388575434684753,
+        "shares_to_trade": -0.6388575434684753,
+        "trade_value": -66.76517669283889,
+        "confidence": 1.0
+      },
+      "benchmark": {
+        "black_scholes_delta": -0.30852361377126325,
+        "deviation": -0.3303339296972121
+      },
+      "metadata": {
+        "scenario_type": "standard",
+        "moneyness": 1.0450714306409916
+      }
+    },
+    {
+      "prediction_id": 2,
+      "timestamp": "2026-02-24T12:39:55.424648",
+      "input": {
+        "spot_price": 102.31993941811405,
+        "strike": 100.0,
+        "time_to_maturity": 0.2323592099410596,
+        "volatility": 0.2433529710760895,
+        "option_type": "call",
+        "current_hedge": 0.4502331810559776
+      },
+      "prediction": {
+        "target_hedge_ratio": -0.6439246535301208,
+        "shares_to_trade": -0.6439246535301208,
+        "trade_value": -65.88633153903204,
+        "confidence": 1.0
+      },
+      "benchmark": {
+        "black_scholes_delta": 0.6380321534236044,
+        "deviation": -1.2819568069537253
+      },
+      "metadata": {
+        "scenario_type": "standard",
+        "moneyness": 1.0231993941811404
+      }
+    },
+    {
+      "prediction_id": 3,
+      "timestamp": "2026-02-24T12:39:55.424692",
+      "input": {
+        "spot_price": 100.98658484197036,
+        "strike": 100.0,
+        "time_to_maturity": 0.1254233401144094,
+        "volatility": 0.2335774684074758,
+        "option_type": "put",
+        "current_hedge": 0.3375927759363475
+      },
+      "prediction": {
+        "target_hedge_ratio": -0.6381075978279114,
+        "shares_to_trade": -0.6381075978279114,
+        "trade_value": -64.44030706635426,
+        "confidence": 1.0
+      },
+      "benchmark": {
+        "black_scholes_delta": -0.40677372339917983,
+        "deviation": -0.23133387442873155
+      },
+      "metadata": {
+        "scenario_type": "standard",
+        "moneyness": 1.0098658484197036
+      }
+    },
+    {
+      "prediction_id": 4,
+      "timestamp": "2026-02-24T12:39:55.424735",
+      "input": {
+        "spot_price": 96.56018640442436,
+        "strike": 100.0,
+        "time_to_maturity": 0.2243929286862649,
+        "volatility": 0.1890289770054408,
+        "option_type": "call",
+        "current_hedge": 0.5313120563984696
+      },
+      "prediction": {
+        "target_hedge_ratio": -0.6419712901115417,
+        "shares_to_trade": -0.6419712901115417,
+        "trade_value": -61.988867439459256,
+        "confidence": 1.0
+      },
+      "benchmark": {
+        "black_scholes_delta": 0.41260721770194686,
+        "deviation": -1.0545785078134886
+      },
+      "metadata": {
+        "scenario_type": "standard",
+        "moneyness": 0.9656018640442438
+      }
+    },
+    {
+      "prediction_id": 5,
+      "timestamp": "2026-02-24T12:39:55.424772",
+      "input": {
+        "spot_price": 96.55994520336202,
+        "strike": 100.0,
+        "time_to_maturity": 0.2300733288106988,
+        "volatility": 0.2635302495589238,
+        "option_type": "put",
+        "current_hedge": 0.3143769095186968
+      },
+      "prediction": {
+        "target_hedge_ratio": -0.6370733976364136,
+        "shares_to_trade": -0.6370733976364136,
+        "trade_value": -61.515772366291756,
+        "confidence": 1.0
+      },
+      "benchmark": {
+        "black_scholes_delta": -0.5488387919966278,
+        "deviation": -0.0882346056397858
+      },
+      "metadata": {
+        "scenario_type": "standard",
+        "moneyness": 0.9655994520336202
+      }
+    },
+    {
+      "prediction_id": 6,
+      "timestamp": "2026-02-24T12:39:55.424808",
+      "input": {
+        "spot_price": 95.580836121682,
+        "strike": 100.0,
+        "time_to_maturity": 0.3918424713352256,
+        "volatility": 0.2120780064971736,
+        "option_type": "call",
+        "current_hedge": 0.486239207252984
+      },
+      "prediction": {
+        "target_hedge_ratio": -0.6421465873718262,
+        "shares_to_trade": -0.6421465873718262,
+        "trade_value": -61.376907733683865,
+        "confidence": 1.0
+      },
+      "benchmark": {
+        "black_scholes_delta": 0.44966739066742256,
+        "deviation": -1.0918139780392488
+      },
+      "metadata": {
+        "scenario_type": "standard",
+        "moneyness": 0.95580836121682
+      }
+    },
+    {
+      "prediction_id": 7,
+      "timestamp": "2026-02-24T12:39:55.424844",
+      "input": {
+        "spot_price": 103.66176145774936,
+        "strike": 100.0,
+        "time_to_maturity": 0.3550229885420852,
+        "volatility": 0.1986518510399854,
+        "option_type": "put",
+        "current_hedge": 0.5170578538830306
+      },
+      "prediction": {
+        "target_hedge_ratio": -0.638485848903656,
+        "shares_to_trade": -0.638485848903656,
+        "trade_value": -66.18656776319939,
+        "confidence": 1.0
+      },
+      "benchmark": {
+        "black_scholes_delta": -0.30398031826975047,
+        "deviation": -0.33450553063390553
+      },
+      "metadata": {
+        "scenario_type": "standard",
+        "moneyness": 1.0366176145774937
+      }
+    },
+    {
+      "prediction_id": 8,
+      "timestamp": "2026-02-24T12:39:55.424879",
+      "input": {
+        "spot_price": 101.0111501174321,
+        "strike": 100.0,
+        "time_to_maturity": 0.4548850970305306,
+        "volatility": 0.1840775141554763,
+        "option_type": "call",
+        "current_hedge": 0.4146165008513137
+      },
+      "prediction": {
+        "target_hedge_ratio": -0.6431065201759338,
+        "shares_to_trade": -0.6431065201759338,
+        "trade_value": -64.96092925099063,
+        "confidence": 1.0
+      },
+      "benchmark": {
+        "black_scholes_delta": 0.627904844883359,
+        "deviation": -1.2710113650592927
+      },
+      "metadata": {
+        "scenario_type": "standard",
+        "moneyness": 1.010111501174321
+      }
+    },
+    {
+      "prediction_id": 9,
+      "timestamp": "2026-02-24T12:39:55.424916",
+      "input": {
+        "spot_price": 102.08072577796044,
+        "strike": 100.0,
+        "time_to_maturity": 0.2888859700647797,
+        "volatility": 0.2390892943188242,
+        "option_type": "call",
+        "current_hedge": 0.5363333042276043
+      },
+      "prediction": {
+        "target_hedge_ratio": -0.6437931656837463,
+        "shares_to_trade": -0.6437931656837463,
+        "trade_value": -65.71887360388756,
+        "confidence": 1.0
+      },
+      "benchmark": {
+        "black_scholes_delta": 0.6319075815631672,
+        "deviation": -1.2757007472469135
+      },
+      "metadata": {
+        "scenario_type": "standard",
+        "moneyness": 1.0208072577796046
+      }
+    }
+  ]
+}

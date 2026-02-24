@@ -1,0 +1,2006 @@
+{
+  "generated_at": "2026-02-24T12:39:55.441727",
+  "total_instructions": 200,
+  "instructions": [
+    {
+      "order_id": "RL_20260224_123955_0000",
+      "security": "PUT_100_112D",
+      "action": "SELL",
+      "quantity": 0.6374590992927551,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6560021367270265,
+      "target_delta": -0.6374590992927551
+    },
+    {
+      "order_id": "RL_20260224_123955_0001",
+      "security": "PUT_100_88D",
+      "action": "SELL",
+      "quantity": 0.6388575434684753,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4351980627406143,
+      "target_delta": -0.6388575434684753
+    },
+    {
+      "order_id": "RL_20260224_123955_0002",
+      "security": "CALL_100_59D",
+      "action": "SELL",
+      "quantity": 0.6439246535301208,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4502331810559776,
+      "target_delta": -0.6439246535301208
+    },
+    {
+      "order_id": "RL_20260224_123955_0003",
+      "security": "PUT_100_32D",
+      "action": "SELL",
+      "quantity": 0.6381075978279114,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3375927759363475,
+      "target_delta": -0.6381075978279114
+    },
+    {
+      "order_id": "RL_20260224_123955_0004",
+      "security": "CALL_100_57D",
+      "action": "SELL",
+      "quantity": 0.6419712901115417,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5313120563984696,
+      "target_delta": -0.6419712901115417
+    },
+    {
+      "order_id": "RL_20260224_123955_0005",
+      "security": "PUT_100_58D",
+      "action": "SELL",
+      "quantity": 0.6370733976364136,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3143769095186968,
+      "target_delta": -0.6370733976364136
+    },
+    {
+      "order_id": "RL_20260224_123955_0006",
+      "security": "CALL_100_99D",
+      "action": "SELL",
+      "quantity": 0.6421465873718262,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.486239207252984,
+      "target_delta": -0.6421465873718262
+    },
+    {
+      "order_id": "RL_20260224_123955_0007",
+      "security": "PUT_100_89D",
+      "action": "SELL",
+      "quantity": 0.638485848903656,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5170578538830306,
+      "target_delta": -0.638485848903656
+    },
+    {
+      "order_id": "RL_20260224_123955_0008",
+      "security": "CALL_100_115D",
+      "action": "SELL",
+      "quantity": 0.6431065201759338,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4146165008513137,
+      "target_delta": -0.6431065201759338
+    },
+    {
+      "order_id": "RL_20260224_123955_0009",
+      "security": "CALL_100_73D",
+      "action": "SELL",
+      "quantity": 0.6437931656837463,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5363333042276043,
+      "target_delta": -0.6437931656837463
+    },
+    {
+      "order_id": "RL_20260224_123955_0010",
+      "security": "PUT_100_37D",
+      "action": "SELL",
+      "quantity": 0.6361643671989441,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3122000999756197,
+      "target_delta": -0.6361643671989441
+    },
+    {
+      "order_id": "RL_20260224_123955_0011",
+      "security": "CALL_100_97D",
+      "action": "SELL",
+      "quantity": 0.6438691020011902,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3149392754996857,
+      "target_delta": -0.6438691020011902
+    },
+    {
+      "order_id": "RL_20260224_123955_0012",
+      "security": "CALL_100_102D",
+      "action": "SELL",
+      "quantity": 0.6438664793968201,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6290402242638633,
+      "target_delta": -0.6438664793968201
+    },
+    {
+      "order_id": "RL_20260224_123955_0013",
+      "security": "PUT_100_82D",
+      "action": "SELL",
+      "quantity": 0.6368221640586853,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4440762565645051,
+      "target_delta": -0.6368221640586853
+    },
+    {
+      "order_id": "RL_20260224_123955_0014",
+      "security": "CALL_100_103D",
+      "action": "SELL",
+      "quantity": 0.6427355408668518,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3508242050607539,
+      "target_delta": -0.6427355408668518
+    },
+    {
+      "order_id": "RL_20260224_123955_0015",
+      "security": "CALL_100_75D",
+      "action": "SELL",
+      "quantity": 0.6422383189201355,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5088973040219217,
+      "target_delta": -0.6422383189201355
+    },
+    {
+      "order_id": "RL_20260224_123955_0016",
+      "security": "CALL_100_78D",
+      "action": "SELL",
+      "quantity": 0.643021285533905,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6079974212394443,
+      "target_delta": -0.643021285533905
+    },
+    {
+      "order_id": "RL_20260224_123955_0017",
+      "security": "PUT_100_68D",
+      "action": "SELL",
+      "quantity": 0.6377795338630676,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3863284109987372,
+      "target_delta": -0.6377795338630676
+    },
+    {
+      "order_id": "RL_20260224_123955_0018",
+      "security": "CALL_100_28D",
+      "action": "SELL",
+      "quantity": 0.6435679793357849,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5491561903276001,
+      "target_delta": -0.6435679793357849
+    },
+    {
+      "order_id": "RL_20260224_123955_0019",
+      "security": "PUT_100_36D",
+      "action": "SELL",
+      "quantity": 0.6366037726402283,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3341389859975072,
+      "target_delta": -0.6366037726402283
+    },
+    {
+      "order_id": "RL_20260224_123955_0020",
+      "security": "CALL_100_28D",
+      "action": "SELL",
+      "quantity": 0.6436158418655396,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.320672688467443,
+      "target_delta": -0.6436158418655396
+    },
+    {
+      "order_id": "RL_20260224_123955_0021",
+      "security": "CALL_100_89D",
+      "action": "SELL",
+      "quantity": 0.6421098113059998,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5125418526272592,
+      "target_delta": -0.6421098113059998
+    },
+    {
+      "order_id": "RL_20260224_123955_0022",
+      "security": "CALL_100_57D",
+      "action": "SELL",
+      "quantity": 0.6431856751441956,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5162540486440426,
+      "target_delta": -0.6431856751441956
+    },
+    {
+      "order_id": "RL_20260224_123955_0023",
+      "security": "PUT_100_76D",
+      "action": "SELL",
+      "quantity": 0.6377634406089783,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5549719605992827,
+      "target_delta": -0.6377634406089783
+    },
+    {
+      "order_id": "RL_20260224_123955_0024",
+      "security": "CALL_100_117D",
+      "action": "SELL",
+      "quantity": 0.6429529786109924,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5904365334890647,
+      "target_delta": -0.6429529786109924
+    },
+    {
+      "order_id": "RL_20260224_123955_0025",
+      "security": "CALL_100_50D",
+      "action": "SELL",
+      "quantity": 0.6440966129302979,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6903408317850138,
+      "target_delta": -0.6440966129302979
+    },
+    {
+      "order_id": "RL_20260224_123955_0026",
+      "security": "PUT_100_67D",
+      "action": "SELL",
+      "quantity": 0.6372424960136414,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5065201393204781,
+      "target_delta": -0.6372424960136414
+    },
+    {
+      "order_id": "RL_20260224_123955_0027",
+      "security": "CALL_100_101D",
+      "action": "SELL",
+      "quantity": 0.6433184742927551,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4291825891764984,
+      "target_delta": -0.6433184742927551
+    },
+    {
+      "order_id": "RL_20260224_123955_0028",
+      "security": "PUT_100_48D",
+      "action": "SELL",
+      "quantity": 0.6380448937416077,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6180744779074814,
+      "target_delta": -0.6380448937416077
+    },
+    {
+      "order_id": "RL_20260224_123955_0029",
+      "security": "PUT_100_33D",
+      "action": "SELL",
+      "quantity": 0.6355675458908081,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4083329005048297,
+      "target_delta": -0.6355675458908081
+    },
+    {
+      "order_id": "RL_20260224_123955_0030",
+      "security": "CALL_100_54D",
+      "action": "SELL",
+      "quantity": 0.6432972550392151,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4755885682822544,
+      "target_delta": -0.6432972550392151
+    },
+    {
+      "order_id": "RL_20260224_123955_0031",
+      "security": "PUT_100_41D",
+      "action": "SELL",
+      "quantity": 0.6370155215263367,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3313825525369063,
+      "target_delta": -0.6370155215263367
+    },
+    {
+      "order_id": "RL_20260224_123955_0032",
+      "security": "CALL_100_119D",
+      "action": "SELL",
+      "quantity": 0.6427479982376099,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.310140297366183,
+      "target_delta": -0.6427479982376099
+    },
+    {
+      "order_id": "RL_20260224_123955_0033",
+      "security": "PUT_100_107D",
+      "action": "SELL",
+      "quantity": 0.6388012170791626,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.68505936587117,
+      "target_delta": -0.6388012170791626
+    },
+    {
+      "order_id": "RL_20260224_123955_0034",
+      "security": "PUT_100_89D",
+      "action": "SELL",
+      "quantity": 0.638751208782196,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6343920482048823,
+      "target_delta": -0.638751208782196
+    },
+    {
+      "order_id": "RL_20260224_123955_0035",
+      "security": "CALL_100_113D",
+      "action": "SELL",
+      "quantity": 0.6436818242073059,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5783896824374792,
+      "target_delta": -0.6436818242073059
+    },
+    {
+      "order_id": "RL_20260224_123955_0036",
+      "security": "PUT_100_106D",
+      "action": "SELL",
+      "quantity": 0.6375693082809448,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4635811777657079,
+      "target_delta": -0.6375693082809448
+    },
+    {
+      "order_id": "RL_20260224_123955_0037",
+      "security": "PUT_100_44D",
+      "action": "SELL",
+      "quantity": 0.6368100047111511,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3693177280283383,
+      "target_delta": -0.6368100047111511
+    },
+    {
+      "order_id": "RL_20260224_123955_0038",
+      "security": "PUT_100_115D",
+      "action": "SELL",
+      "quantity": 0.6384467482566833,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3625748170684344,
+      "target_delta": -0.6384467482566833
+    },
+    {
+      "order_id": "RL_20260224_123955_0039",
+      "security": "PUT_100_80D",
+      "action": "SELL",
+      "quantity": 0.6378686428070068,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4000971592658381,
+      "target_delta": -0.6378686428070068
+    },
+    {
+      "order_id": "RL_20260224_123955_0040",
+      "security": "PUT_100_107D",
+      "action": "SELL",
+      "quantity": 0.6370829939842224,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5196906658824482,
+      "target_delta": -0.6370829939842224
+    },
+    {
+      "order_id": "RL_20260224_123955_0041",
+      "security": "CALL_100_116D",
+      "action": "SELL",
+      "quantity": 0.6429136395454407,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5858383690800248,
+      "target_delta": -0.6429136395454407
+    },
+    {
+      "order_id": "RL_20260224_123955_0042",
+      "security": "PUT_100_57D",
+      "action": "SELL",
+      "quantity": 0.635913610458374,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5640789506870925,
+      "target_delta": -0.635913610458374
+    },
+    {
+      "order_id": "RL_20260224_123955_0043",
+      "security": "CALL_100_36D",
+      "action": "SELL",
+      "quantity": 0.6446345448493958,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4119735587783771,
+      "target_delta": -0.6446345448493958
+    },
+    {
+      "order_id": "RL_20260224_123955_0044",
+      "security": "PUT_100_48D",
+      "action": "SELL",
+      "quantity": 0.6370754837989807,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6819461122652776,
+      "target_delta": -0.6370754837989807
+    },
+    {
+      "order_id": "RL_20260224_123955_0045",
+      "security": "CALL_100_68D",
+      "action": "SELL",
+      "quantity": 0.6433464884757996,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5951587666783074,
+      "target_delta": -0.6433464884757996
+    },
+    {
+      "order_id": "RL_20260224_123955_0046",
+      "security": "CALL_100_108D",
+      "action": "SELL",
+      "quantity": 0.6425369381904602,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5217416210045602,
+      "target_delta": -0.6425369381904602
+    },
+    {
+      "order_id": "RL_20260224_123955_0047",
+      "security": "PUT_100_112D",
+      "action": "SELL",
+      "quantity": 0.6379836201667786,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5446882984937409,
+      "target_delta": -0.6379836201667786
+    },
+    {
+      "order_id": "RL_20260224_123955_0048",
+      "security": "PUT_100_26D",
+      "action": "SELL",
+      "quantity": 0.6376120448112488,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4678400249711159,
+      "target_delta": -0.6376120448112488
+    },
+    {
+      "order_id": "RL_20260224_123955_0049",
+      "security": "PUT_100_77D",
+      "action": "SELL",
+      "quantity": 0.636641800403595,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3990923958004629,
+      "target_delta": -0.636641800403595
+    },
+    {
+      "order_id": "RL_20260224_123955_0050",
+      "security": "CALL_100_67D",
+      "action": "SELL",
+      "quantity": 0.6442874073982239,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4423890714605046,
+      "target_delta": -0.6442874073982239
+    },
+    {
+      "order_id": "RL_20260224_123955_0051",
+      "security": "PUT_100_48D",
+      "action": "SELL",
+      "quantity": 0.638634443283081,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6031384441857477,
+      "target_delta": -0.638634443283081
+    },
+    {
+      "order_id": "RL_20260224_123955_0052",
+      "security": "CALL_100_37D",
+      "action": "SELL",
+      "quantity": 0.6445257067680359,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3057573954519023,
+      "target_delta": -0.6445257067680359
+    },
+    {
+      "order_id": "RL_20260224_123955_0053",
+      "security": "CALL_100_59D",
+      "action": "SELL",
+      "quantity": 0.6440148949623108,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3464290562027665,
+      "target_delta": -0.6440148949623108
+    },
+    {
+      "order_id": "RL_20260224_123955_0054",
+      "security": "CALL_100_120D",
+      "action": "SELL",
+      "quantity": 0.6435356736183167,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.318401056808701,
+      "target_delta": -0.6435356736183167
+    },
+    {
+      "order_id": "RL_20260224_123955_0055",
+      "security": "PUT_100_58D",
+      "action": "SELL",
+      "quantity": 0.638733446598053,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.316291520927588,
+      "target_delta": -0.638733446598053
+    },
+    {
+      "order_id": "RL_20260224_123955_0056",
+      "security": "PUT_100_77D",
+      "action": "SELL",
+      "quantity": 0.6365193724632263,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6421842336044028,
+      "target_delta": -0.6365193724632263
+    },
+    {
+      "order_id": "RL_20260224_123955_0057",
+      "security": "CALL_100_96D",
+      "action": "SELL",
+      "quantity": 0.6428559422492981,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5814631437520095,
+      "target_delta": -0.6428559422492981
+    },
+    {
+      "order_id": "RL_20260224_123955_0058",
+      "security": "CALL_100_62D",
+      "action": "SELL",
+      "quantity": 0.6423178315162659,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.48966953163493,
+      "target_delta": -0.6423178315162659
+    },
+    {
+      "order_id": "RL_20260224_123955_0059",
+      "security": "PUT_100_123D",
+      "action": "SELL",
+      "quantity": 0.6377248167991638,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3391336642604006,
+      "target_delta": -0.6377248167991638
+    },
+    {
+      "order_id": "RL_20260224_123955_0060",
+      "security": "CALL_100_122D",
+      "action": "SELL",
+      "quantity": 0.6431217789649963,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4966463500467329,
+      "target_delta": -0.6431217789649963
+    },
+    {
+      "order_id": "RL_20260224_123955_0061",
+      "security": "PUT_100_51D",
+      "action": "SELL",
+      "quantity": 0.6370997428894043,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4893887083122262,
+      "target_delta": -0.6370997428894043
+    },
+    {
+      "order_id": "RL_20260224_123955_0062",
+      "security": "CALL_100_75D",
+      "action": "SELL",
+      "quantity": 0.6437328457832336,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.369280747964006,
+      "target_delta": -0.6437328457832336
+    },
+    {
+      "order_id": "RL_20260224_123955_0063",
+      "security": "PUT_100_56D",
+      "action": "SELL",
+      "quantity": 0.6372280716896057,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4735406596951892,
+      "target_delta": -0.6372280716896057
+    },
+    {
+      "order_id": "RL_20260224_123955_0064",
+      "security": "CALL_100_54D",
+      "action": "SELL",
+      "quantity": 0.6425178647041321,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4594018937589493,
+      "target_delta": -0.6425178647041321
+    },
+    {
+      "order_id": "RL_20260224_123955_0065",
+      "security": "PUT_100_29D",
+      "action": "SELL",
+      "quantity": 0.6377251744270325,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5463400392208866,
+      "target_delta": -0.6377251744270325
+    },
+    {
+      "order_id": "RL_20260224_123955_0066",
+      "security": "CALL_100_87D",
+      "action": "SELL",
+      "quantity": 0.6429514288902283,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5540374603470575,
+      "target_delta": -0.6429514288902283
+    },
+    {
+      "order_id": "RL_20260224_123955_0067",
+      "security": "PUT_100_76D",
+      "action": "SELL",
+      "quantity": 0.6384647488594055,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3181216039088178,
+      "target_delta": -0.6384647488594055
+    },
+    {
+      "order_id": "RL_20260224_123955_0068",
+      "security": "PUT_100_30D",
+      "action": "SELL",
+      "quantity": 0.6364943385124207,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4498450458505885,
+      "target_delta": -0.6364943385124207
+    },
+    {
+      "order_id": "RL_20260224_123955_0069",
+      "security": "CALL_100_53D",
+      "action": "SELL",
+      "quantity": 0.6444571614265442,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5503439662856946,
+      "target_delta": -0.6444571614265442
+    },
+    {
+      "order_id": "RL_20260224_123955_0070",
+      "security": "CALL_100_117D",
+      "action": "SELL",
+      "quantity": 0.6438949704170227,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.501254503432035,
+      "target_delta": -0.6438949704170227
+    },
+    {
+      "order_id": "RL_20260224_123955_0071",
+      "security": "PUT_100_49D",
+      "action": "SELL",
+      "quantity": 0.636783242225647,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6425959364753289,
+      "target_delta": -0.636783242225647
+    },
+    {
+      "order_id": "RL_20260224_123955_0072",
+      "security": "CALL_100_40D",
+      "action": "SELL",
+      "quantity": 0.6419146656990051,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.563477452647578,
+      "target_delta": -0.6419146656990051
+    },
+    {
+      "order_id": "RL_20260224_123955_0073",
+      "security": "PUT_100_75D",
+      "action": "SELL",
+      "quantity": 0.638545572757721,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3651737708325718,
+      "target_delta": -0.638545572757721
+    },
+    {
+      "order_id": "RL_20260224_123955_0074",
+      "security": "CALL_100_125D",
+      "action": "SELL",
+      "quantity": 0.6433665156364441,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3282274989601719,
+      "target_delta": -0.6433665156364441
+    },
+    {
+      "order_id": "RL_20260224_123955_0075",
+      "security": "PUT_100_50D",
+      "action": "SELL",
+      "quantity": 0.6385290026664734,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5569677112825262,
+      "target_delta": -0.6385290026664734
+    },
+    {
+      "order_id": "RL_20260224_123955_0076",
+      "security": "PUT_100_93D",
+      "action": "SELL",
+      "quantity": 0.6383124589920044,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3106045242166487,
+      "target_delta": -0.6383124589920044
+    },
+    {
+      "order_id": "RL_20260224_123955_0077",
+      "security": "PUT_100_102D",
+      "action": "SELL",
+      "quantity": 0.636337399482727,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5343102325093853,
+      "target_delta": -0.636337399482727
+    },
+    {
+      "order_id": "RL_20260224_123955_0078",
+      "security": "PUT_100_49D",
+      "action": "SELL",
+      "quantity": 0.637434184551239,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.676092096569983,
+      "target_delta": -0.637434184551239
+    },
+    {
+      "order_id": "RL_20260224_123955_0079",
+      "security": "PUT_100_99D",
+      "action": "SELL",
+      "quantity": 0.6365936398506165,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5301896711503515,
+      "target_delta": -0.6365936398506165
+    },
+    {
+      "order_id": "RL_20260224_123955_0080",
+      "security": "CALL_100_36D",
+      "action": "SELL",
+      "quantity": 0.6394978761672974,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2888195914405788,
+      "target_delta": -0.6394978761672974
+    },
+    {
+      "order_id": "RL_20260224_123955_0081",
+      "security": "CALL_100_116D",
+      "action": "SELL",
+      "quantity": 0.6422560214996338,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3087246066953851,
+      "target_delta": -0.6422560214996338
+    },
+    {
+      "order_id": "RL_20260224_123955_0082",
+      "security": "CALL_100_76D",
+      "action": "SELL",
+      "quantity": 0.6408699750900269,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.236362319430332,
+      "target_delta": -0.6408699750900269
+    },
+    {
+      "order_id": "RL_20260224_123955_0083",
+      "security": "CALL_100_109D",
+      "action": "SELL",
+      "quantity": 0.6413095593452454,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2882674240252191,
+      "target_delta": -0.6413095593452454
+    },
+    {
+      "order_id": "RL_20260224_123955_0084",
+      "security": "CALL_100_57D",
+      "action": "SELL",
+      "quantity": 0.6424389481544495,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2752942935769301,
+      "target_delta": -0.6424389481544495
+    },
+    {
+      "order_id": "RL_20260224_123955_0085",
+      "security": "CALL_100_115D",
+      "action": "SELL",
+      "quantity": 0.6417219042778015,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3703474031472967,
+      "target_delta": -0.6417219042778015
+    },
+    {
+      "order_id": "RL_20260224_123955_0086",
+      "security": "CALL_100_64D",
+      "action": "SELL",
+      "quantity": 0.6427213549613953,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.1136339141024373,
+      "target_delta": -0.6427213549613953
+    },
+    {
+      "order_id": "RL_20260224_123955_0087",
+      "security": "CALL_100_26D",
+      "action": "SELL",
+      "quantity": 0.6418436169624329,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.1842889568776691,
+      "target_delta": -0.6418436169624329
+    },
+    {
+      "order_id": "RL_20260224_123955_0088",
+      "security": "CALL_100_116D",
+      "action": "SELL",
+      "quantity": 0.640602171421051,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3851234452229677,
+      "target_delta": -0.640602171421051
+    },
+    {
+      "order_id": "RL_20260224_123955_0089",
+      "security": "CALL_100_34D",
+      "action": "SELL",
+      "quantity": 0.638818085193634,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.367079135167275,
+      "target_delta": -0.638818085193634
+    },
+    {
+      "order_id": "RL_20260224_123955_0090",
+      "security": "CALL_100_57D",
+      "action": "SELL",
+      "quantity": 0.6403548121452332,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2366970258357139,
+      "target_delta": -0.6403548121452332
+    },
+    {
+      "order_id": "RL_20260224_123955_0091",
+      "security": "CALL_100_121D",
+      "action": "SELL",
+      "quantity": 0.640516459941864,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.286039779340461,
+      "target_delta": -0.640516459941864
+    },
+    {
+      "order_id": "RL_20260224_123955_0092",
+      "security": "CALL_100_121D",
+      "action": "SELL",
+      "quantity": 0.6404826641082764,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.1832143548943398,
+      "target_delta": -0.6404826641082764
+    },
+    {
+      "order_id": "RL_20260224_123955_0093",
+      "security": "CALL_100_83D",
+      "action": "SELL",
+      "quantity": 0.6421266794204712,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.1564363479171284,
+      "target_delta": -0.6421266794204712
+    },
+    {
+      "order_id": "RL_20260224_123955_0094",
+      "security": "CALL_100_89D",
+      "action": "SELL",
+      "quantity": 0.6397115588188171,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2391095214819946,
+      "target_delta": -0.6397115588188171
+    },
+    {
+      "order_id": "RL_20260224_123955_0095",
+      "security": "CALL_100_70D",
+      "action": "SELL",
+      "quantity": 0.6406391859054565,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2060056684078158,
+      "target_delta": -0.6406391859054565
+    },
+    {
+      "order_id": "RL_20260224_123955_0096",
+      "security": "CALL_100_55D",
+      "action": "SELL",
+      "quantity": 0.6411294341087341,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2750968335552616,
+      "target_delta": -0.6411294341087341
+    },
+    {
+      "order_id": "RL_20260224_123955_0097",
+      "security": "CALL_100_58D",
+      "action": "SELL",
+      "quantity": 0.63974529504776,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.1233203910894954,
+      "target_delta": -0.63974529504776
+    },
+    {
+      "order_id": "RL_20260224_123955_0098",
+      "security": "CALL_100_93D",
+      "action": "SELL",
+      "quantity": 0.6414600014686584,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.39231844229985,
+      "target_delta": -0.6414600014686584
+    },
+    {
+      "order_id": "RL_20260224_123955_0099",
+      "security": "CALL_100_101D",
+      "action": "SELL",
+      "quantity": 0.6403123736381531,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3958632233438809,
+      "target_delta": -0.6403123736381531
+    },
+    {
+      "order_id": "RL_20260224_123955_0100",
+      "security": "PUT_100_105D",
+      "action": "SELL",
+      "quantity": 0.6389703154563904,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3094485142059235,
+      "target_delta": -0.6389703154563904
+    },
+    {
+      "order_id": "RL_20260224_123955_0101",
+      "security": "PUT_100_105D",
+      "action": "SELL",
+      "quantity": 0.6400588154792786,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2608289099032361,
+      "target_delta": -0.6400588154792786
+    },
+    {
+      "order_id": "RL_20260224_123955_0102",
+      "security": "PUT_100_34D",
+      "action": "SELL",
+      "quantity": 0.6404863595962524,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.1928582848858983,
+      "target_delta": -0.6404863595962524
+    },
+    {
+      "order_id": "RL_20260224_123955_0103",
+      "security": "PUT_100_75D",
+      "action": "SELL",
+      "quantity": 0.6404173970222473,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3441385059120846,
+      "target_delta": -0.6404173970222473
+    },
+    {
+      "order_id": "RL_20260224_123955_0104",
+      "security": "PUT_100_31D",
+      "action": "SELL",
+      "quantity": 0.6407771706581116,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3054193517661638,
+      "target_delta": -0.6407771706581116
+    },
+    {
+      "order_id": "RL_20260224_123955_0105",
+      "security": "PUT_100_81D",
+      "action": "SELL",
+      "quantity": 0.640204668045044,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.1487850818034674,
+      "target_delta": -0.640204668045044
+    },
+    {
+      "order_id": "RL_20260224_123955_0106",
+      "security": "PUT_100_70D",
+      "action": "SELL",
+      "quantity": 0.6394724249839783,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3732781553481528,
+      "target_delta": -0.6394724249839783
+    },
+    {
+      "order_id": "RL_20260224_123955_0107",
+      "security": "PUT_100_115D",
+      "action": "SELL",
+      "quantity": 0.6393832564353943,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3467611728769507,
+      "target_delta": -0.6393832564353943
+    },
+    {
+      "order_id": "RL_20260224_123955_0108",
+      "security": "PUT_100_61D",
+      "action": "SELL",
+      "quantity": 0.6401878595352173,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3849399739875773,
+      "target_delta": -0.6401878595352173
+    },
+    {
+      "order_id": "RL_20260224_123955_0109",
+      "security": "PUT_100_37D",
+      "action": "SELL",
+      "quantity": 0.6407972574234009,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.317715852516508,
+      "target_delta": -0.6407972574234009
+    },
+    {
+      "order_id": "RL_20260224_123955_0110",
+      "security": "PUT_100_40D",
+      "action": "SELL",
+      "quantity": 0.6404335498809814,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2840245587807369,
+      "target_delta": -0.6404335498809814
+    },
+    {
+      "order_id": "RL_20260224_123955_0111",
+      "security": "PUT_100_102D",
+      "action": "SELL",
+      "quantity": 0.6398404836654663,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2254729108871856,
+      "target_delta": -0.6398404836654663
+    },
+    {
+      "order_id": "RL_20260224_123955_0112",
+      "security": "PUT_100_88D",
+      "action": "SELL",
+      "quantity": 0.6394466161727905,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.379818545006204,
+      "target_delta": -0.6394466161727905
+    },
+    {
+      "order_id": "RL_20260224_123955_0113",
+      "security": "PUT_100_35D",
+      "action": "SELL",
+      "quantity": 0.6407365202903748,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3598191668501225,
+      "target_delta": -0.6407365202903748
+    },
+    {
+      "order_id": "RL_20260224_123955_0114",
+      "security": "PUT_100_34D",
+      "action": "SELL",
+      "quantity": 0.6399708390235901,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.1135656010318568,
+      "target_delta": -0.6399708390235901
+    },
+    {
+      "order_id": "RL_20260224_123955_0115",
+      "security": "PUT_100_96D",
+      "action": "SELL",
+      "quantity": 0.6405683159828186,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.1079100923491756,
+      "target_delta": -0.6405683159828186
+    },
+    {
+      "order_id": "RL_20260224_123955_0116",
+      "security": "PUT_100_33D",
+      "action": "SELL",
+      "quantity": 0.6403775811195374,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.2129390100634149,
+      "target_delta": -0.6403775811195374
+    },
+    {
+      "order_id": "RL_20260224_123955_0117",
+      "security": "PUT_100_108D",
+      "action": "SELL",
+      "quantity": 0.639629602432251,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3431659992345499,
+      "target_delta": -0.639629602432251
+    },
+    {
+      "order_id": "RL_20260224_123955_0118",
+      "security": "PUT_100_96D",
+      "action": "SELL",
+      "quantity": 0.6403284668922424,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3961828387944833,
+      "target_delta": -0.6403284668922424
+    },
+    {
+      "order_id": "RL_20260224_123955_0119",
+      "security": "PUT_100_33D",
+      "action": "SELL",
+      "quantity": 0.6405251622200012,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.1451250673310584,
+      "target_delta": -0.6405251622200012
+    },
+    {
+      "order_id": "RL_20260224_123955_0120",
+      "security": "CALL_100_96D",
+      "action": "SELL",
+      "quantity": 0.6449587941169739,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5080284791110905,
+      "target_delta": -0.6449587941169739
+    },
+    {
+      "order_id": "RL_20260224_123955_0121",
+      "security": "CALL_100_47D",
+      "action": "SELL",
+      "quantity": 0.645077645778656,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6288316662332714,
+      "target_delta": -0.645077645778656
+    },
+    {
+      "order_id": "RL_20260224_123955_0122",
+      "security": "CALL_100_39D",
+      "action": "SELL",
+      "quantity": 0.6457224488258362,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5845792027986179,
+      "target_delta": -0.6457224488258362
+    },
+    {
+      "order_id": "RL_20260224_123955_0123",
+      "security": "CALL_100_27D",
+      "action": "SELL",
+      "quantity": 0.6456088423728943,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6309989408711658,
+      "target_delta": -0.6456088423728943
+    },
+    {
+      "order_id": "RL_20260224_123955_0124",
+      "security": "CALL_100_61D",
+      "action": "SELL",
+      "quantity": 0.6454406380653381,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5479048527277005,
+      "target_delta": -0.6454406380653381
+    },
+    {
+      "order_id": "RL_20260224_123955_0125",
+      "security": "CALL_100_85D",
+      "action": "SELL",
+      "quantity": 0.6450161337852478,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.856210912295958,
+      "target_delta": -0.6450161337852478
+    },
+    {
+      "order_id": "RL_20260224_123955_0126",
+      "security": "CALL_100_65D",
+      "action": "SELL",
+      "quantity": 0.6449423432350159,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.7374369814216195,
+      "target_delta": -0.6449423432350159
+    },
+    {
+      "order_id": "RL_20260224_123955_0127",
+      "security": "CALL_100_69D",
+      "action": "SELL",
+      "quantity": 0.6447853446006775,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.7716409276577958,
+      "target_delta": -0.6447853446006775
+    },
+    {
+      "order_id": "RL_20260224_123955_0128",
+      "security": "CALL_100_116D",
+      "action": "SELL",
+      "quantity": 0.644277036190033,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.8156684954429354,
+      "target_delta": -0.644277036190033
+    },
+    {
+      "order_id": "RL_20260224_123955_0129",
+      "security": "CALL_100_60D",
+      "action": "SELL",
+      "quantity": 0.6458002924919128,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6993768795716229,
+      "target_delta": -0.6458002924919128
+    },
+    {
+      "order_id": "RL_20260224_123955_0130",
+      "security": "CALL_100_77D",
+      "action": "SELL",
+      "quantity": 0.6452711224555969,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5347681152349695,
+      "target_delta": -0.6452711224555969
+    },
+    {
+      "order_id": "RL_20260224_123955_0131",
+      "security": "CALL_100_104D",
+      "action": "SELL",
+      "quantity": 0.6457249522209167,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.7148426167274191,
+      "target_delta": -0.6457249522209167
+    },
+    {
+      "order_id": "RL_20260224_123955_0132",
+      "security": "CALL_100_65D",
+      "action": "SELL",
+      "quantity": 0.6458703875541687,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.7347364472083516,
+      "target_delta": -0.6458703875541687
+    },
+    {
+      "order_id": "RL_20260224_123955_0133",
+      "security": "CALL_100_88D",
+      "action": "SELL",
+      "quantity": 0.6449192762374878,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.798175789673732,
+      "target_delta": -0.6449192762374878
+    },
+    {
+      "order_id": "RL_20260224_123955_0134",
+      "security": "CALL_100_112D",
+      "action": "SELL",
+      "quantity": 0.6454597115516663,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6726638184918717,
+      "target_delta": -0.6454597115516663
+    },
+    {
+      "order_id": "RL_20260224_123955_0135",
+      "security": "CALL_100_121D",
+      "action": "SELL",
+      "quantity": 0.6456320881843567,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5510321211182255,
+      "target_delta": -0.6456320881843567
+    },
+    {
+      "order_id": "RL_20260224_123955_0136",
+      "security": "CALL_100_40D",
+      "action": "SELL",
+      "quantity": 0.6455363631248474,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6135103623194897,
+      "target_delta": -0.6455363631248474
+    },
+    {
+      "order_id": "RL_20260224_123955_0137",
+      "security": "CALL_100_119D",
+      "action": "SELL",
+      "quantity": 0.6444143652915955,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6452329185594541,
+      "target_delta": -0.6444143652915955
+    },
+    {
+      "order_id": "RL_20260224_123955_0138",
+      "security": "CALL_100_75D",
+      "action": "SELL",
+      "quantity": 0.645255446434021,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.7583668965326404,
+      "target_delta": -0.645255446434021
+    },
+    {
+      "order_id": "RL_20260224_123955_0139",
+      "security": "CALL_100_51D",
+      "action": "SELL",
+      "quantity": 0.6449167728424072,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.7283113218675648,
+      "target_delta": -0.6449167728424072
+    },
+    {
+      "order_id": "RL_20260224_123955_0140",
+      "security": "PUT_100_71D",
+      "action": "SELL",
+      "quantity": 0.636113166809082,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6424386903591385,
+      "target_delta": -0.636113166809082
+    },
+    {
+      "order_id": "RL_20260224_123955_0141",
+      "security": "PUT_100_124D",
+      "action": "SELL",
+      "quantity": 0.6356430649757385,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.8946060995171918,
+      "target_delta": -0.6356430649757385
+    },
+    {
+      "order_id": "RL_20260224_123955_0142",
+      "security": "PUT_100_75D",
+      "action": "SELL",
+      "quantity": 0.6342847347259521,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.7423099277427548,
+      "target_delta": -0.6342847347259521
+    },
+    {
+      "order_id": "RL_20260224_123955_0143",
+      "security": "PUT_100_58D",
+      "action": "SELL",
+      "quantity": 0.6354267001152039,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5948907166943977,
+      "target_delta": -0.6354267001152039
+    },
+    {
+      "order_id": "RL_20260224_123955_0144",
+      "security": "PUT_100_89D",
+      "action": "SELL",
+      "quantity": 0.6359056830406189,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5407129890481615,
+      "target_delta": -0.6359056830406189
+    },
+    {
+      "order_id": "RL_20260224_123955_0145",
+      "security": "PUT_100_49D",
+      "action": "SELL",
+      "quantity": 0.6340572237968445,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5611436556737328,
+      "target_delta": -0.6340572237968445
+    },
+    {
+      "order_id": "RL_20260224_123955_0146",
+      "security": "PUT_100_33D",
+      "action": "SELL",
+      "quantity": 0.6329994797706604,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5983830913538033,
+      "target_delta": -0.6329994797706604
+    },
+    {
+      "order_id": "RL_20260224_123955_0147",
+      "security": "PUT_100_38D",
+      "action": "SELL",
+      "quantity": 0.6353177428245544,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5642725493038223,
+      "target_delta": -0.6353177428245544
+    },
+    {
+      "order_id": "RL_20260224_123955_0148",
+      "security": "PUT_100_38D",
+      "action": "SELL",
+      "quantity": 0.6336269974708557,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5746268096205223,
+      "target_delta": -0.6336269974708557
+    },
+    {
+      "order_id": "RL_20260224_123955_0149",
+      "security": "PUT_100_41D",
+      "action": "SELL",
+      "quantity": 0.6349868774414062,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6140380674775389,
+      "target_delta": -0.6349868774414062
+    },
+    {
+      "order_id": "RL_20260224_123955_0150",
+      "security": "PUT_100_39D",
+      "action": "SELL",
+      "quantity": 0.6347965598106384,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.569349438117902,
+      "target_delta": -0.6347965598106384
+    },
+    {
+      "order_id": "RL_20260224_123955_0151",
+      "security": "PUT_100_90D",
+      "action": "SELL",
+      "quantity": 0.6368158459663391,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.85870616985057,
+      "target_delta": -0.6368158459663391
+    },
+    {
+      "order_id": "RL_20260224_123955_0152",
+      "security": "PUT_100_44D",
+      "action": "SELL",
+      "quantity": 0.6347209215164185,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5320934982646569,
+      "target_delta": -0.6347209215164185
+    },
+    {
+      "order_id": "RL_20260224_123955_0153",
+      "security": "PUT_100_60D",
+      "action": "SELL",
+      "quantity": 0.6351919770240784,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.7098045558281019,
+      "target_delta": -0.6351919770240784
+    },
+    {
+      "order_id": "RL_20260224_123955_0154",
+      "security": "PUT_100_116D",
+      "action": "SELL",
+      "quantity": 0.636171281337738,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6641587307958646,
+      "target_delta": -0.636171281337738
+    },
+    {
+      "order_id": "RL_20260224_123955_0155",
+      "security": "PUT_100_73D",
+      "action": "SELL",
+      "quantity": 0.6348555088043213,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.8929514467634425,
+      "target_delta": -0.6348555088043213
+    },
+    {
+      "order_id": "RL_20260224_123955_0156",
+      "security": "PUT_100_92D",
+      "action": "SELL",
+      "quantity": 0.634583055973053,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5448155608672209,
+      "target_delta": -0.634583055973053
+    },
+    {
+      "order_id": "RL_20260224_123955_0157",
+      "security": "PUT_100_43D",
+      "action": "SELL",
+      "quantity": 0.6327917575836182,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6591422396182967,
+      "target_delta": -0.6327917575836182
+    },
+    {
+      "order_id": "RL_20260224_123955_0158",
+      "security": "PUT_100_45D",
+      "action": "SELL",
+      "quantity": 0.6350662708282471,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.8877881733101476,
+      "target_delta": -0.6350662708282471
+    },
+    {
+      "order_id": "RL_20260224_123955_0159",
+      "security": "PUT_100_29D",
+      "action": "SELL",
+      "quantity": 0.6342115998268127,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.8462028503575921,
+      "target_delta": -0.6342115998268127
+    },
+    {
+      "order_id": "RL_20260224_123955_0160",
+      "security": "CALL_100_79D",
+      "action": "SELL",
+      "quantity": 0.6461213827133179,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3467592162833456,
+      "target_delta": -0.6461213827133179
+    },
+    {
+      "order_id": "RL_20260224_123955_0161",
+      "security": "CALL_100_30D",
+      "action": "SELL",
+      "quantity": 0.6435130834579468,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.67593284944539,
+      "target_delta": -0.6435130834579468
+    },
+    {
+      "order_id": "RL_20260224_123955_0162",
+      "security": "PUT_100_59D",
+      "action": "SELL",
+      "quantity": 0.6372790932655334,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5510832212285671,
+      "target_delta": -0.6372790932655334
+    },
+    {
+      "order_id": "RL_20260224_123955_0163",
+      "security": "CALL_100_39D",
+      "action": "SELL",
+      "quantity": 0.645991325378418,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4339622458628344,
+      "target_delta": -0.645991325378418
+    },
+    {
+      "order_id": "RL_20260224_123955_0164",
+      "security": "CALL_100_32D",
+      "action": "SELL",
+      "quantity": 0.6467062830924988,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3557088290653549,
+      "target_delta": -0.6467062830924988
+    },
+    {
+      "order_id": "RL_20260224_123955_0165",
+      "security": "CALL_100_125D",
+      "action": "SELL",
+      "quantity": 0.6452401280403137,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6176100757081184,
+      "target_delta": -0.6452401280403137
+    },
+    {
+      "order_id": "RL_20260224_123955_0166",
+      "security": "CALL_100_58D",
+      "action": "SELL",
+      "quantity": 0.6447656750679016,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5480291023714053,
+      "target_delta": -0.6447656750679016
+    },
+    {
+      "order_id": "RL_20260224_123955_0167",
+      "security": "CALL_100_107D",
+      "action": "SELL",
+      "quantity": 0.6445379853248596,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5133844367905286,
+      "target_delta": -0.6445379853248596
+    },
+    {
+      "order_id": "RL_20260224_123955_0168",
+      "security": "CALL_100_51D",
+      "action": "SELL",
+      "quantity": 0.6455379128456116,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6575570332203831,
+      "target_delta": -0.6455379128456116
+    },
+    {
+      "order_id": "RL_20260224_123955_0169",
+      "security": "CALL_100_94D",
+      "action": "SELL",
+      "quantity": 0.6434326171875,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6154388844898122,
+      "target_delta": -0.6434326171875
+    },
+    {
+      "order_id": "RL_20260224_123955_0170",
+      "security": "CALL_100_102D",
+      "action": "SELL",
+      "quantity": 0.6438884735107422,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3606699518931004,
+      "target_delta": -0.6438884735107422
+    },
+    {
+      "order_id": "RL_20260224_123955_0171",
+      "security": "CALL_100_85D",
+      "action": "SELL",
+      "quantity": 0.6450027823448181,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4246888271182192,
+      "target_delta": -0.6450027823448181
+    },
+    {
+      "order_id": "RL_20260224_123955_0172",
+      "security": "CALL_100_73D",
+      "action": "SELL",
+      "quantity": 0.6452054381370544,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3993956559257863,
+      "target_delta": -0.6452054381370544
+    },
+    {
+      "order_id": "RL_20260224_123955_0173",
+      "security": "PUT_100_67D",
+      "action": "SELL",
+      "quantity": 0.638362467288971,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5975785170290708,
+      "target_delta": -0.638362467288971
+    },
+    {
+      "order_id": "RL_20260224_123955_0174",
+      "security": "PUT_100_60D",
+      "action": "SELL",
+      "quantity": 0.6375070214271545,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3134129738943117,
+      "target_delta": -0.6375070214271545
+    },
+    {
+      "order_id": "RL_20260224_123955_0175",
+      "security": "CALL_100_119D",
+      "action": "SELL",
+      "quantity": 0.6454032063484192,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5279558739485266,
+      "target_delta": -0.6454032063484192
+    },
+    {
+      "order_id": "RL_20260224_123955_0176",
+      "security": "PUT_100_109D",
+      "action": "SELL",
+      "quantity": 0.6384950876235962,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6049834742962762,
+      "target_delta": -0.6384950876235962
+    },
+    {
+      "order_id": "RL_20260224_123955_0177",
+      "security": "PUT_100_122D",
+      "action": "SELL",
+      "quantity": 0.6398104429244995,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6507062547046998,
+      "target_delta": -0.6398104429244995
+    },
+    {
+      "order_id": "RL_20260224_123955_0178",
+      "security": "CALL_100_38D",
+      "action": "SELL",
+      "quantity": 0.6435104012489319,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4368326994863629,
+      "target_delta": -0.6435104012489319
+    },
+    {
+      "order_id": "RL_20260224_123955_0179",
+      "security": "CALL_100_99D",
+      "action": "SELL",
+      "quantity": 0.6446686387062073,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6285029218688052,
+      "target_delta": -0.6446686387062073
+    },
+    {
+      "order_id": "RL_20260224_123955_0180",
+      "security": "CALL_100_5D",
+      "action": "SELL",
+      "quantity": 0.6430289149284363,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3052377826353334,
+      "target_delta": -0.6430289149284363
+    },
+    {
+      "order_id": "RL_20260224_123955_0181",
+      "security": "CALL_100_13D",
+      "action": "SELL",
+      "quantity": 0.6455230116844177,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5654149488066842,
+      "target_delta": -0.6455230116844177
+    },
+    {
+      "order_id": "RL_20260224_123955_0182",
+      "security": "PUT_100_11D",
+      "action": "SELL",
+      "quantity": 0.6352869868278503,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3712143867479005,
+      "target_delta": -0.6352869868278503
+    },
+    {
+      "order_id": "RL_20260224_123955_0183",
+      "security": "CALL_100_13D",
+      "action": "SELL",
+      "quantity": 0.6442882418632507,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.684428126987782,
+      "target_delta": -0.6442882418632507
+    },
+    {
+      "order_id": "RL_20260224_123955_0184",
+      "security": "CALL_100_3D",
+      "action": "SELL",
+      "quantity": 0.6467990279197693,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3594650911012451,
+      "target_delta": -0.6467990279197693
+    },
+    {
+      "order_id": "RL_20260224_123955_0185",
+      "security": "PUT_100_18D",
+      "action": "SELL",
+      "quantity": 0.6366222500801086,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4658496494908095,
+      "target_delta": -0.6366222500801086
+    },
+    {
+      "order_id": "RL_20260224_123955_0186",
+      "security": "PUT_100_19D",
+      "action": "SELL",
+      "quantity": 0.6371461749076843,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3341398672314575,
+      "target_delta": -0.6371461749076843
+    },
+    {
+      "order_id": "RL_20260224_123955_0187",
+      "security": "CALL_100_12D",
+      "action": "SELL",
+      "quantity": 0.644691526889801,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6987497007383789,
+      "target_delta": -0.644691526889801
+    },
+    {
+      "order_id": "RL_20260224_123955_0188",
+      "security": "CALL_100_15D",
+      "action": "SELL",
+      "quantity": 0.6442199945449829,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.500878004132497,
+      "target_delta": -0.6442199945449829
+    },
+    {
+      "order_id": "RL_20260224_123955_0189",
+      "security": "PUT_100_19D",
+      "action": "SELL",
+      "quantity": 0.6385254263877869,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5381540069280175,
+      "target_delta": -0.6385254263877869
+    },
+    {
+      "order_id": "RL_20260224_123955_0190",
+      "security": "PUT_100_15D",
+      "action": "SELL",
+      "quantity": 0.6393353343009949,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.326830590955371,
+      "target_delta": -0.6393353343009949
+    },
+    {
+      "order_id": "RL_20260224_123955_0191",
+      "security": "CALL_100_5D",
+      "action": "SELL",
+      "quantity": 0.6441258192062378,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.599984188159671,
+      "target_delta": -0.6441258192062378
+    },
+    {
+      "order_id": "RL_20260224_123955_0192",
+      "security": "PUT_100_13D",
+      "action": "SELL",
+      "quantity": 0.6366515755653381,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3839622372382343,
+      "target_delta": -0.6366515755653381
+    },
+    {
+      "order_id": "RL_20260224_123955_0193",
+      "security": "CALL_100_13D",
+      "action": "SELL",
+      "quantity": 0.6431983709335327,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.6592217157762854,
+      "target_delta": -0.6431983709335327
+    },
+    {
+      "order_id": "RL_20260224_123955_0194",
+      "security": "CALL_100_10D",
+      "action": "SELL",
+      "quantity": 0.6426244378089905,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3820558561928028,
+      "target_delta": -0.6426244378089905
+    },
+    {
+      "order_id": "RL_20260224_123955_0195",
+      "security": "CALL_100_16D",
+      "action": "SELL",
+      "quantity": 0.645621120929718,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3762750882654666,
+      "target_delta": -0.645621120929718
+    },
+    {
+      "order_id": "RL_20260224_123955_0196",
+      "security": "CALL_100_19D",
+      "action": "SELL",
+      "quantity": 0.6439545750617981,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3146198671392379,
+      "target_delta": -0.6439545750617981
+    },
+    {
+      "order_id": "RL_20260224_123955_0197",
+      "security": "CALL_100_19D",
+      "action": "SELL",
+      "quantity": 0.6433042883872986,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.4888267780439996,
+      "target_delta": -0.6433042883872986
+    },
+    {
+      "order_id": "RL_20260224_123955_0198",
+      "security": "PUT_100_10D",
+      "action": "SELL",
+      "quantity": 0.6385241150856018,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.5259364533050466,
+      "target_delta": -0.6385241150856018
+    },
+    {
+      "order_id": "RL_20260224_123955_0199",
+      "security": "PUT_100_5D",
+      "action": "SELL",
+      "quantity": 0.6404445171356201,
+      "reason": "RL_hedge_adjustment",
+      "confidence": 1.0,
+      "current_delta": 0.3262834557713409,
+      "target_delta": -0.6404445171356201
+    }
+  ]
+}

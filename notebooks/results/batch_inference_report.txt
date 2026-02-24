@@ -1,0 +1,18 @@
+================================================================================
+INFERENCE BATCH REPORT
+================================================================================
+Timestamp: 2026-02-24T12:40:09.485339
+Number of predictions: 200
+
+HEDGE RATIO STATISTICS
+--------------------------------------------------------------------------------
+Mean target hedge: -0.6407
+Std target hedge: 0.0035
+Min target hedge: -0.6468
+Max target hedge: -0.6328
+
+TRADE STATISTICS
+--------------------------------------------------------------------------------
+Total shares to trade: -128.14
+Total trade value: $-12,814.97
+Mean hedge adjustment: -0.6407
