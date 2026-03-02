@@ -1,0 +1,112 @@
+# ==================== Enhanced Dependencies ====================
+# Original core dependencies (from pyproject.toml)
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+gymnasium>=0.28.0
+stable-baselines3>=2.0.0
+torch>=2.0.0
+tensorboard>=2.13.0
+pyyaml>=6.0
+python-dotenv>=1.0.0
+yfinance>=0.2.28
+
+# HIGH PRIORITY ENHANCEMENTS
+
+# #1 Extended Backtesting
+# (no additional deps - uses core libraries)
+
+# #2 Advanced Baselines (SABR, Local Vol)
+py_vollib_vectorized>=0.1.1
+scipy>=1.11.0
+
+# #3 Multi-Asset Training
+# (uses core libraries)
+
+# #4 Real-Time Data Pipeline
+alpaca-trade-api>=3.0.0
+websocket-client>=1.6.3
+polygon-api-client>=1.12.0
+streamlit>=1.28.0
+
+
+# MEDIUM PRIORITY ENHANCEMENTS
+
+# #5 Hyperparameter Optimization
+optuna>=3.4.0
+optuna-dashboard>=0.13.0
+sqlalchemy>=2.0.0
+
+# #6 Model Explainability
+shap>=0.43.0
+captum>=0.6.0
+
+# #7 Ensemble Methods
+# (uses core SB3)
+
+# #8 Alternative Reward Functions
+# (no additional deps)
+
+
+# LOW PRIORITY ENHANCEMENTS
+
+# #9 GPU Acceleration
+# Install separately based on CUDA version:
+# pip install torch==2.1.0+cu121 torchvision==0.16.0+cu121 --index-url https://download.pytorch.org/whl/cu121
+# Or for CPU-only (default):
+# torch>=2.0.0 (already included above)
+
+# #10 Distributed Training
+ray[default,rllib]>=2.9.0
+
+# #11 Model Compression
+torch-pruning>=1.3.0
+neural-compressor>=2.4.0
+onnx>=1.15.0
+onnxruntime>=1.16.0
+
+# #12 A/B Testing Framework
+mlflow>=2.9.0
+statsmodels>=0.14.0
+
+
+# ADDITIONAL UTILITIES
+jupyter>=1.0.0
+notebook>=7.0.0
+ipywidgets>=8.1.0
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.0.0
+flake8>=6.1.0
+mypy>=1.6.0
+
+# Development Tools
+tqdm>=4.66.0
+colorama>=0.4.6
+tabulate>=0.9.0
+
+# Plotting & Visualization
+plotly>=5.17.0
+dash>=2.14.0
+
+# Data Handling
+openpyxl>=3.1.2  # For Excel export
+h5py>=3.10.0     # For HDF5 storage
+
+# =========================== NOTES ===========================
+# 
+# To install all enhancements:
+#   pip install -r requirements_enhanced.txt
+#
+# For GPU support (CUDA 12.1):
+#   pip install torch==2.1.0+cu121 --index-url https://download.pytorch.org/whl/cu121
+#
+# For distributed training:
+#   pip install "ray[default,rllib]==2.9.0"
+#
+# For production deployment:
+#   pip install gunicorn uvicorn fastapi
+#
+# =============================================================

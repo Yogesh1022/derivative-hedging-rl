@@ -383,3 +383,9 @@ conda-env/
 !QUICK_START.md
 !IMPLEMENTATION_PLAN.md
 !*.md
+
+# Testing & Coverage (additional)
+test_output/
+
+# Archive
+MD_ARCHIVE/

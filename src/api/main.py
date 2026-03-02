@@ -1,8 +1,9 @@
 """Main FastAPI application."""
 
+import time
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from prometheus_client import make_asgi_app
@@ -17,6 +18,7 @@ from src.api.routes import (
     health,
     models,
 )
+from src.api.websocket import get_socket_app, sio, get_connection_info
 from src.utils.config import get_settings
 from src.utils.logger import setup_logger
 
@@ -54,6 +56,34 @@ app.add_middleware(
 )
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+
+# Add request logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Log all incoming requests and responses."""
+    start_time = time.time()
+    
+    # Log request
+    logger.info(f"→ {request.method} {request.url.path}")
+    
+    # Process request
+    response = await call_next(request)
+    
+    # Calculate duration
+    process_time = time.time() - start_time
+    
+    # Log response
+    logger.info(
+        f"← {request.method} {request.url.path} "
+        f"[{response.status_code}] {process_time:.3f}s"
+    )
+    
+    # Add custom header
+    response.headers["X-Process-Time"] = str(process_time)
+    
+    return response
+
+
 # Mount Prometheus metrics
 if settings.ENABLE_METRICS:
     metrics_app = make_asgi_app()
@@ -69,6 +99,10 @@ app.include_router(experiments.router, prefix="/api/v1/experiments", tags=["Expe
 app.include_router(models.router, prefix="/api/v1/models", tags=["Models"])
 app.include_router(evaluations.router, prefix="/api/v1/evaluations", tags=["Evaluations"])
 
+# Mount WebSocket application
+logger.info("🔌 Mounting WebSocket server at /socket.io/")
+app.mount("/socket.io", get_socket_app())
+
 
 @app.get("/")
 async def root():
@@ -78,6 +112,27 @@ async def root():
         "version": "0.3.0",
         "docs": "/docs",
         "health": "/api/v1/health",
+        "websocket": "/socket.io",
+    }
+
+
+@app.get("/ws-info")
+async def websocket_info():
+    """Get WebSocket connection information."""
+    return get_connection_info()
+
+
+@app.get("/ws-test")
+async def websocket_test():
+    """Test WebSocket broadcasting."""
+    from src.api.websocket import broadcast_to_all
+    await broadcast_to_all('test_message', {
+        'message': 'Test broadcast from API',
+        'timestamp': time.time()
+    })
+    return {
+        "status": "broadcasted",
+        "message": "Test message sent to all connected clients"
     }
 
 

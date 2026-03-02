@@ -46,6 +46,11 @@ dependencies = [
     "scipy>=1.10.0",
     "scikit-learn>=1.3.0",
     
+    # Hyperparameter Optimization & Visualization
+    "optuna>=3.3.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    
     # Web Framework & API
     "fastapi>=0.104.0",
     "uvicorn[standard]>=0.24.0",

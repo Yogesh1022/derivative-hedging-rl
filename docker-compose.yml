@@ -1,34 +1,31 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: hedge_rl_postgres
+    container_name: hedgeai-postgres
     environment:
-      POSTGRES_USER: hedge_rl
-      POSTGRES_PASSWORD: hedge_rl_password
-      POSTGRES_DB: hedge_rl_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: hedgeai_password
+      POSTGRES_DB: hedgeai
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hedge_rl"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hedgeai"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - hedge_rl_network
+      - hedgeai-network
 
-  # Redis Cache & Message Broker
+  # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: hedge_rl_redis
+    container_name: hedgeai-redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
@@ -38,105 +35,91 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - hedge_rl_network
+      - hedgeai-network
 
-  # FastAPI Backend
-  api:
+  # FastAPI ML Service
+  ml-service:
     build:
-      context: .
+      context: ./ml-service
       dockerfile: Dockerfile
-    container_name: hedge_rl_api
-    environment:
-      DATABASE_URL: postgresql://hedge_rl:hedge_rl_password@postgres:5432docker-compose down/hedge_rl_db
-      REDIS_URL: redis://redis:6379/0
-      ENVIRONMENT: development
-      DEBUG: "true"
-      SECRET_KEY: your-secret-key-change-in-production
+    container_name: hedgeai-ml-service
+    env_file:
+      - ./ml-service/.env
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
-      - ./data:/app/data
       - ./models:/app/models
-      - ./logs:/app/logs
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+      - ./ml-service:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
     networks:
-      - hedge_rl_network
+      - hedgeai-network
 
-  # Celery Worker for Background Tasks
-  celery_worker:
+  # Node.js Backend API Gateway
+  backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: hedge_rl_celery
+    container_name: hedgeai-backend
+    env_file:
+      - ./backend/.env
     environment:
-      DATABASE_URL: postgresql://hedge_rl:hedge_rl_password@postgres:5432/hedge_rl_db
-      REDIS_URL: redis://redis:6379/0
-      ENVIRONMENT: development
-      DEBUG: "true"
-    volumes:
-      - .:/app
-      - ./data:/app/data
-      - ./models:/app/models
-      - ./logs:/app/logs
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: celery -A src.tasks.celery_app worker --loglevel=info
-    networks:
-      - hedge_rl_network
-
-  # Celery Beat for Scheduled Tasks
-  celery_beat:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: hedge_rl_celery_beat
-    environment:
-      DATABASE_URL: postgresql://hedge_rl:hedge_rl_password@postgres:5432/hedge_rl_db
-      REDIS_URL: redis://redis:6379/0
-      ENVIRONMENT: development
-      DEBUG: "true"
-    volumes:
-      - .:/app
-      - ./data:/app/data
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: celery -A src.tasks.celery_app beat --loglevel=info
-    networks:
-      - hedge_rl_network
-
-  # Flower - Celery Monitoring
-  flower:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: hedge_rl_flower
-    environment:
-      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: "postgresql://postgres:hedgeai_password@postgres:5432/hedgeai?schema=public"
+      ML_SERVICE_URL: "http://ml-service:8000"
+      REDIS_URL: "redis://redis:6379"
     ports:
-      - "5555:5555"
+      - "5000:5000"
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+      - ./backend/logs:/app/logs
     depends_on:
-      - redis
-      - celery_worker
-    command: celery -A src.tasks.celery_app flower --port=5555
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ml-service:
+        condition: service_started
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
     networks:
-      - hedge_rl_network
+      - hedgeai-network
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: hedgeai-frontend
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "3001:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - hedgeai-network
 
 volumes:
   postgres_data:
   redis_data:
 
 networks:
-  hedge_rl_network:
+  hedgeai-network:
     driver: bridge

@@ -1,0 +1,267 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  name         String
+  password     String
+  role         UserRole    @default(TRADER)
+  status       UserStatus  @default(ACTIVE)
+  refreshToken String?
+  lastLogin    DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  auditLogs    AuditLog[]
+  portfolios   Portfolio[]
+  riskAlerts   RiskAlert[]
+  trades       Trade[]
+
+  @@index([email])
+  @@index([role, status])
+  @@map("users")
+}
+
+model Portfolio {
+  id               String             @id @default(uuid())
+  userId           String
+  name             String
+  description      String?
+  totalValue       Decimal            @db.Decimal(18, 2)
+  cashBalance      Decimal            @db.Decimal(18, 2)
+  pnl              Decimal            @db.Decimal(18, 2)
+  pnlPercent       Decimal            @db.Decimal(8, 4)
+  riskScore        Int?
+  volatility       Decimal?           @db.Decimal(8, 4)
+  sharpeRatio      Decimal?           @db.Decimal(8, 4)
+  maxDrawdown      Decimal?           @db.Decimal(8, 4)
+  var95            Decimal?           @db.Decimal(18, 2)
+  var99            Decimal?           @db.Decimal(18, 2)
+  totalDelta       Decimal?           @db.Decimal(12, 4)
+  totalGamma       Decimal?           @db.Decimal(12, 4)
+  totalVega        Decimal?           @db.Decimal(12, 4)
+  totalTheta       Decimal?           @db.Decimal(12, 4)
+  lastPrediction   DateTime?
+  mlRecommendation String?
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  histories        PortfolioHistory[]
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  positions        Position[]
+  trades           Trade[]
+
+  @@index([userId])
+  @@index([userId, isActive])
+  @@map("portfolios")
+}
+
+model Position {
+  id            String      @id @default(uuid())
+  portfolioId   String
+  symbol        String
+  assetType     AssetType
+  optionType    OptionType?
+  strikePrice   Decimal?    @db.Decimal(18, 2)
+  expiryDate    DateTime?
+  quantity      Decimal     @db.Decimal(18, 8)
+  avgPrice      Decimal     @db.Decimal(18, 2)
+  currentPrice  Decimal     @db.Decimal(18, 2)
+  marketValue   Decimal     @db.Decimal(18, 2)
+  unrealizedPnL Decimal     @db.Decimal(18, 2)
+  realizedPnL   Decimal     @db.Decimal(18, 2)
+  delta         Decimal?    @db.Decimal(8, 6)
+  gamma         Decimal?    @db.Decimal(8, 6)
+  vega          Decimal?    @db.Decimal(8, 6)
+  theta         Decimal?    @db.Decimal(8, 6)
+  impliedVol    Decimal?    @db.Decimal(8, 4)
+  openedAt      DateTime    @default(now())
+  lastUpdated   DateTime    @updatedAt
+  isClosed      Boolean     @default(false)
+  closedAt      DateTime?
+  portfolio     Portfolio   @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@index([symbol])
+  @@index([portfolioId, isClosed])
+  @@map("positions")
+}
+
+model Trade {
+  id          String      @id @default(uuid())
+  userId      String
+  portfolioId String
+  symbol      String
+  side        TradeSide
+  quantity    Decimal     @db.Decimal(18, 8)
+  price       Decimal     @db.Decimal(18, 2)
+  totalValue  Decimal     @db.Decimal(18, 2)
+  status      TradeStatus @default(PENDING)
+  executedAt  DateTime?
+  commission  Decimal     @default(0) @db.Decimal(18, 2)
+  slippage    Decimal?    @db.Decimal(18, 2)
+  pnl         Decimal?    @db.Decimal(18, 2)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  portfolio   Portfolio   @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([portfolioId])
+  @@index([symbol])
+  @@index([createdAt])
+  @@index([userId, status])
+  @@map("trades")
+}
+
+model RiskAlert {
+  id          String        @id @default(uuid())
+  userId      String
+  type        AlertType
+  severity    AlertSeverity
+  message     String
+  details     Json?
+  isRead      Boolean       @default(false)
+  isDismissed Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  readAt      DateTime?
+  dismissedAt DateTime?
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@index([severity, isRead])
+  @@map("risk_alerts")
+}
+
+model PortfolioHistory {
+  id          String    @id @default(uuid())
+  portfolioId String
+  totalValue  Decimal   @db.Decimal(18, 2)
+  pnl         Decimal   @db.Decimal(18, 2)
+  riskScore   Int?
+  volatility  Decimal?  @db.Decimal(8, 4)
+  var95       Decimal?  @db.Decimal(18, 2)
+  totalDelta  Decimal?  @db.Decimal(12, 4)
+  totalGamma  Decimal?  @db.Decimal(12, 4)
+  totalVega   Decimal?  @db.Decimal(12, 4)
+  timestamp   DateTime  @default(now())
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId, timestamp])
+  @@index([timestamp])
+  @@map("portfolio_history")
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  userId     String?
+  action     AuditAction
+  resource   String
+  resourceId String?
+  ipAddress  String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime    @default(now())
+  user       User?       @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([resource, resourceId])
+  @@map("audit_logs")
+}
+
+model MLModel {
+  id          String    @id @default(uuid())
+  name        String
+  version     String
+  modelType   String
+  filePath    String
+  sharpeRatio Decimal?  @db.Decimal(8, 4)
+  maxDrawdown Decimal?  @db.Decimal(8, 4)
+  winRate     Decimal?  @db.Decimal(8, 4)
+  isActive    Boolean   @default(false)
+  trainedAt   DateTime?
+  deployedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([isActive])
+  @@map("ml_models")
+}
+
+enum UserRole {
+  TRADER
+  ANALYST
+  RISK_MANAGER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum AssetType {
+  STOCK
+  OPTION
+  FUTURE
+  FOREX
+  CRYPTO
+}
+
+enum OptionType {
+  CALL
+  PUT
+}
+
+enum TradeSide {
+  BUY
+  SELL
+}
+
+enum TradeStatus {
+  PENDING
+  EXECUTED
+  CANCELLED
+  FAILED
+}
+
+enum AlertType {
+  VAR_BREACH
+  DELTA_LIMIT
+  GAMMA_LIMIT
+  VEGA_LIMIT
+  POSITION_LIMIT
+  VOLATILITY_SPIKE
+  DRAWDOWN_WARNING
+  MARGIN_CALL
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum AuditAction {
+  USER_LOGIN
+  USER_LOGOUT
+  USER_CREATED
+  USER_UPDATED
+  USER_DELETED
+  TRADE_EXECUTED
+  PORTFOLIO_CREATED
+  PORTFOLIO_UPDATED
+  RISK_ALERT_CREATED
+  ML_PREDICTION_REQUESTED
+  SETTINGS_CHANGED
+}

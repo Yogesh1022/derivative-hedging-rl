@@ -57,7 +57,7 @@ class Dataset(Base):
     end_date = Column(DateTime)
     num_samples = Column(Integer)
     file_path = Column(String(500))
-    metadata = Column(JSON)
+    meta_data = Column(JSON)  # Renamed from metadata to avoid SQLAlchemy reserved name
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -136,7 +136,7 @@ class TrainedModel(Base):
     trained_on_dataset = Column(String(255))
     training_duration = Column(Float)
     total_parameters = Column(Integer)
-    metadata = Column(JSON)
+    meta_data = Column(JSON)  # Renamed from metadata to avoid SQLAlchemy reserved name
 
     # Deployment status
     is_deployed = Column(Boolean, default=False)
