@@ -233,14 +233,13 @@ export const authController = {
     const resetToken = Math.random().toString(36).substring(2, 15);
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
 
-    // TODO: Uncomment after running migration
-    // await prisma.user.update({
-    //   where: { id: user.id },
-    //   data: {
-    //     resetToken,
-    //     resetTokenExpiry,
-    //   },
-    // });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetToken,
+        resetTokenExpiry,
+      },
+    });
 
     logger.info(`Password reset requested for ${email}`);
 
@@ -259,17 +258,14 @@ export const authController = {
   resetPassword: asyncHandler(async (req: Request, res: Response) => {
     const { token, newPassword } = req.body;
 
-    // TODO: Uncomment after running migration
-    // const user = await prisma.user.findFirst({
-    //   where: {
-    //     resetToken: token,
-    //     resetTokenExpiry: {
-    //       gt: new Date(),
-    //     },
-    //   },
-    // });
-    
-    const user = null; // Temporary
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: {
+          gt: new Date(),
+        },
+      },
+    });
 
     if (!user) {
       res.status(400).json({
@@ -283,15 +279,14 @@ export const authController = {
     const bcrypt = require('bcrypt');
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // TODO: Uncomment after running migration
-    // await prisma.user.update({
-    //   where: { id: user.id },
-    //   data: {
-    //     password: hashedPassword,
-    //     resetToken: null,
-    //     resetTokenExpiry: null,
-    //   },
-    // });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+    });
 
     // Log audit
     await prisma.auditLog.create({

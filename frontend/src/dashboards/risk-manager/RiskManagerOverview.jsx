@@ -4,6 +4,8 @@ import { C } from "../../constants/colors";
 import { varData } from "../../constants/mockData";
 import { MetricCard, Card, Badge, Button } from "../common";
 import { analyticsService } from "../../services/analyticsService";
+import { mlService } from "../../services/mlService";
+import { portfolioService } from "../../services/portfolioService";
 
 // Mock alerts data
 const mockAlerts = [
@@ -35,8 +37,11 @@ const mockAlerts = [
 
 export const RiskManagerOverview = () => {
   const [riskMetrics, setRiskMetrics] = useState(null);
+  const [mlPrediction, setMlPrediction] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mlLoading, setMlLoading] = useState(true);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     const fetchRiskData = async () => {
@@ -52,6 +57,48 @@ export const RiskManagerOverview = () => {
     };
     fetchRiskData();
   }, []);
+
+  // Real-time ML predictions with 60-second auto-refresh
+  useEffect(() => {
+    const fetchMLPrediction = async () => {
+      try {
+        setMlLoading(true);
+        // Get the first portfolio to use for predictions
+        const portfolios = await portfolioService.getAllPortfolios();
+        if (portfolios && portfolios.length > 0) {
+          const prediction = await mlService.predictRisk(portfolios[0].id);
+          setMlPrediction(prediction);
+          setLastUpdated(new Date());
+        }
+      } catch (error) {
+        console.error("Failed to fetch ML prediction:", error);
+      } finally {
+        setMlLoading(false);
+      }
+    };
+
+    fetchMLPrediction(); // Initial fetch
+    const interval = setInterval(fetchMLPrediction, 60000); // Auto-refresh every 60 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+
+  // Manual refresh function
+  const handleRefreshML = async () => {
+    try {
+      setMlLoading(true);
+      const portfolios = await portfolioService.getAllPortfolios();
+      if (portfolios && portfolios.length > 0) {
+        const prediction = await mlService.predictRisk(portfolios[0].id);
+        setMlPrediction(prediction);
+        setLastUpdated(new Date());
+      }
+    } catch (error) {
+      console.error("Failed to refresh ML prediction:", error);
+    } finally {
+      setMlLoading(false);
+    }
+  };
 
   if (loading)
     return (
@@ -213,7 +260,121 @@ export const RiskManagerOverview = () => {
           icon="🔒"
         />
         <MetricCard label="Risk Score" value={`${riskScore}/100`} icon="🛡" />
+        {mlPrediction && (
+          <MetricCard
+            label="AI Risk Score"
+            value={mlPrediction.riskScore}
+            change={mlPrediction.confidence >= 0.90 ? "🤖 RL Model" : "Heuristic"}
+            changeDir={mlPrediction.riskScore < 40 ? "down" : mlPrediction.riskScore < 70 ? "neutral" : "up"}
+            icon="🧠"
+            accent={mlPrediction.confidence >= 0.90}
+          />
+        )}
+        {mlLoading && !mlPrediction && (
+          <MetricCard
+            label="AI Risk Score"
+            value="..."
+            icon="🧠"
+          />
+        )}
       </div>
+
+      {mlPrediction && (
+        <Card>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 700, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+              <span>🧠</span> ML Risk Assessment
+              {mlLoading && (
+                <span style={{ fontSize: 11, color: C.textMuted, fontWeight: 400 }}>
+                  Updating...
+                </span>
+              )}
+            </h3>
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              {lastUpdated && (
+                <span style={{ fontSize: 11, color: C.textMuted }}>
+                  Updated: {lastUpdated.toLocaleTimeString()}
+                </span>
+              )}
+              <button
+                onClick={handleRefreshML}
+                disabled={mlLoading}
+                style={{
+                  padding: "6px 12px",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  background: mlLoading ? C.border : C.primary,
+                  color: "white",
+                  border: "none",
+                  borderRadius: 4,
+                  cursor: mlLoading ? "not-allowed" : "pointer",
+                  opacity: mlLoading ? 0.6 : 1,
+                  transition: "all 0.2s",
+                }}
+              >
+                🔄 Refresh
+              </button>
+              {mlPrediction.confidence >= 0.90 && (
+                <Badge style={{ background: C.accent, color: C.white, fontSize: 11, padding: "4px 10px" }}>
+                  🤖 RL Model Active
+                </Badge>
+              )}
+              {mlPrediction.confidence < 0.90 && (
+                <Badge style={{ background: C.warning, color: C.white, fontSize: 11, padding: "4px 10px" }}>
+                  Heuristic Mode
+                </Badge>
+              )}
+          </div>
+          
+          <div style={{ 
+            background: mlPrediction.riskScore < 40 ? C.successLight : mlPrediction.riskScore < 70 ? C.warningLight : C.redLight,
+            borderRadius: 8,
+            padding: 12,
+            marginBottom: 16,
+            border: `1px solid ${mlPrediction.riskScore < 40 ? C.success : mlPrediction.riskScore < 70 ? C.warning : C.red}`,
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4, color: C.text }}>
+              {mlPrediction.recommendation}
+            </div>
+            <div style={{ fontSize: 11, color: C.textMuted }}>
+              Confidence: {(mlPrediction.confidence * 100).toFixed(1)}% • Updated: {new Date(mlPrediction.timestamp).toLocaleString()}
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 4 }}>ML Risk Score</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: mlPrediction.riskScore < 40 ? C.success : mlPrediction.riskScore < 70 ? C.warning : C.red }}>
+                {mlPrediction.riskScore}/100
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 4 }}>ML VaR 95%</div>
+              <div style={{ fontSize: 18, fontWeight: 700 }}>
+                ${(Math.abs(mlPrediction.var95) / 1000).toFixed(1)}K
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 4 }}>ML VaR 99%</div>
+              <div style={{ fontSize: 18, fontWeight: 700 }}>
+                ${(Math.abs(mlPrediction.var99) / 1000).toFixed(1)}K
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 4 }}>ML Volatility</div>
+              <div style={{ fontSize: 18, fontWeight: 700 }}>
+                {(mlPrediction.volatility * 100).toFixed(2)}%
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 4 }}>ML Sharpe Ratio</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: mlPrediction.sharpeRatio > 1.5 ? C.success : mlPrediction.sharpeRatio > 1.0 ? C.warning : C.red }}>
+                {mlPrediction.sharpeRatio.toFixed(2)}
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 20 }}>
         <Card>

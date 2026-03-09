@@ -8,6 +8,9 @@ import { alertService } from "./src/services/alertService";
 import { analyticsService } from "./src/services/analyticsService";
 import { userService } from "./src/services/userService";
 import { mlService } from "./src/services/mlService";
+import { RealtimeProvider } from "./src/contexts/RealtimeContext";
+import { StatusBar } from "./src/components/StatusIndicators";
+import { NewPositionModal } from "./src/components/modals";
 import { MarketTrends } from "./src/dashboards/analyst/MarketTrends";
 import { RiskHeatmapPage } from "./src/dashboards/analyst/RiskHeatmapPage";
 import { PerformancePage } from "./src/dashboards/analyst/PerformancePage";
@@ -18,19 +21,58 @@ import { AlertsPage } from "./src/dashboards/risk-manager/AlertsPage";
 import { RiskLimitsPage } from "./src/dashboards/risk-manager/RiskLimitsPage";
 
 /* ═══════════════════════════════════════════════════════════════
-   DESIGN TOKENS
+   ENHANCED DESIGN TOKENS
 ═══════════════════════════════════════════════════════════════ */
 const C = {
-  red: "#E10600", redDark: "#B80500", redLight: "#FF2B26", redGhost: "#FFF0F0",
-  white: "#FFFFFF", offWhite: "#FAFAFA", lightGray: "#F5F5F7", midGray: "#E8E8ED",
-  border: "#E2E2E7", borderLight: "#F0F0F5",
-  text: "#111827", textSub: "#6B7280", textMuted: "#9CA3AF",
-  success: "#16A34A", successBg: "#F0FDF4",
-  warning: "#D97706", warningBg: "#FFFBEB",
-  info: "#2563EB", infoBg: "#EFF6FF",
+  // Primary Colors - Enhanced with gradients
+  red: "#E10600", 
+  redDark: "#B80500", 
+  redLight: "#FF2B26", 
+  redGhost: "#FFF0F0",
+  redGradient: "linear-gradient(135deg, #E10600 0%, #FF2B26 100%)",
+  redGradientSubtle: "linear-gradient(135deg, #FFF0F0 0%, #FFE5E5 100%)",
+  
+  // Neutrals - Enhanced palette
+  white: "#FFFFFF", 
+  offWhite: "#FAFAFA", 
+  lightGray: "#F5F5F7", 
+  midGray: "#E8E8ED",
+  darkGray: "#4B5563",
+  border: "#E2E2E7", 
+  borderLight: "#F0F0F5",
+  
+  // Text Colors - Better hierarchy
+  text: "#111827", 
+  textSub: "#6B7280", 
+  textMuted: "#9CA3AF",
+  
+  // Semantic Colors - More vibrant
+  success: "#10B981", 
+  successBg: "#ECFDF5",
+  successDark: "#059669",
+  warning: "#F59E0B", 
+  warningBg: "#FFFBEB",
+  warningDark: "#D97706",
+  info: "#3B82F6", 
+  infoBg: "#EFF6FF",
+  infoDark: "#2563EB",
+  
+  // Gradients - Modern touches
+  gradientBg: "linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 100%)",
+  gradientCard: "linear-gradient(135deg, #FFFFFF 0%, #FAFAFA 100%)",
+  
+  // Shadows - Layered depth
   shadow: "0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06)",
-  shadowMd: "0 4px 24px rgba(0,0,0,0.1)",
-  shadowRed: "0 4px 24px rgba(225,6,0,0.25)",
+  shadowMd: "0 4px 24px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)",
+  shadowLg: "0 10px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08)",
+  shadowRed: "0 4px 24px rgba(225,6,0,0.25), 0 2px 8px rgba(225,6,0,0.15)",
+  shadowSuccess: "0 4px 20px rgba(16,185,129,0.25)",
+  shadowInner: "inset 0 2px 4px rgba(0,0,0,0.06)",
+  
+  // Glass Effects - Modern glassmorphism
+  glass: "rgba(255, 255, 255, 0.7)",
+  glassBlur: "blur(12px)",
+  glassBorder: "rgba(255, 255, 255, 0.18)",
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -54,98 +96,274 @@ const chatSuggestions = ["Explain my risk score","How to reduce VaR exposure?","
 /* ═══════════════════════════════════════════════════════════════
    SHARED UI COMPONENTS
 ═══════════════════════════════════════════════════════════════ */
-const Badge = ({ children, variant="default" }) => {
+const Badge = ({ children, variant="default", icon, size="md", outline=false, pulse=false, onDismiss }) => {
+  const [mounted, setMounted] = useState(false);
+  const [removed, setRemoved] = useState(false);
+  
+  useEffect(() => { setMounted(true); }, []);
+  
   const styles = {
-    default: { bg: C.lightGray, color: C.textSub },
-    red: { bg: "#FFF0F0", color: C.red },
-    green: { bg: "#F0FDF4", color: "#16A34A" },
-    yellow: { bg: "#FFFBEB", color: "#D97706" },
-    blue: { bg: "#EFF6FF", color: "#2563EB" },
+    default: { bg: C.lightGray, color: C.textSub, border: C.border },
+    red: { bg: "#FFF0F0", color: C.red, border: "#FFC9C9" },
+    green: { bg: "#F0FDF4", color: "#16A34A", border: "#BBF7D0" },
+    yellow: { bg: "#FFFBEB", color: "#D97706", border: "#FDE68A" },
+    blue: { bg: "#EFF6FF", color: "#2563EB", border: "#BFDBFE" },
+    gradient: { bg: C.redGradient, color: C.white, border: C.red },
   };
   const s = styles[variant] || styles.default;
+  const sizeMap = { sm: { fontSize: 10, padding: "2px 8px" }, md: { fontSize: 11, padding: "3px 10px" }, lg: { fontSize: 12, padding: "4px 12px" } };
+  const sz = sizeMap[size] || sizeMap.md;
+  
+  if (removed) return null;
+  
   return (
-    <span style={{ background: s.bg, color: s.color, fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 20, display: "inline-block" }}>
+    <span style={{ 
+      background: outline ? "transparent" : s.bg, 
+      color: s.color, 
+      fontSize: sz.fontSize, 
+      fontWeight: 600, 
+      padding: sz.padding, 
+      borderRadius: 20, 
+      display: "inline-flex", 
+      alignItems: "center", 
+      gap: 4,
+      border: outline ? `1.5px solid ${s.border}` : "none",
+      animation: pulse ? "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" : mounted ? "fadeIn 0.2s ease-out" : "none",
+      opacity: mounted ? 1 : 0,
+      transform: mounted ? "scale(1)" : "scale(0.9)",
+      transition: "all 0.15s ease"
+    }}>
+      {icon && <span style={{ lineHeight: 1 }}>{icon}</span>}
       {children}
+      {onDismiss && (
+        <button onClick={() => { setRemoved(true); onDismiss(); }} 
+          style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", padding: 0, marginLeft: 2, fontSize: sz.fontSize, opacity: 0.6, lineHeight: 1 }}
+          aria-label="Dismiss">
+          ×
+        </button>
+      )}
     </span>
   );
 };
 
-const Card = ({ children, style={}, hover=true }) => {
+const Card = ({ children, style={}, hover=true, glow=false, gradient=false }) => {
   const [hov, setHov] = useState(false);
   return (
     <div onMouseEnter={()=>hover&&setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{ background: C.white, borderRadius: 16, border: `1px solid ${C.border}`, padding: 24,
-        boxShadow: hov ? C.shadowMd : C.shadow, transform: hov ? "translateY(-2px)" : "translateY(0)",
-        transition: "all 0.2s ease", ...style }}>
+      style={{ 
+        background: gradient ? C.gradientCard : C.white, 
+        borderRadius: 16, 
+        border: `1px solid ${hov && glow ? `${C.red}44` : C.border}`, 
+        padding: 24,
+        boxShadow: hov ? (glow ? C.shadowRed : C.shadowMd) : C.shadow, 
+        transform: hov ? "translateY(-4px) scale(1.01)" : "translateY(0) scale(1)",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", 
+        position: "relative",
+        overflow: "hidden",
+        ...style 
+      }}>
+      {gradient && hov && (
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: C.redGradient }} />
+      )}
       {children}
     </div>
   );
 };
 
-const Btn = ({ children, variant="primary", onClick, style={}, disabled=false, size="md" }) => {
+const Btn = ({ children, variant="primary", onClick, style={}, disabled=false, size="md", icon, loading=false }) => {
   const [hov, setHov] = useState(false);
   const [press, setPress] = useState(false);
-  const pad = size === "sm" ? "7px 16px" : size === "lg" ? "14px 32px" : "10px 22px";
+  const pad = size === "sm" ? "8px 16px" : size === "lg" ? "14px 32px" : "11px 24px";
   const fs = size === "sm" ? 12 : size === "lg" ? 15 : 13;
   const vars = {
-    primary: { bg: hov ? C.redDark : C.red, color: C.white, border: "none", shadow: hov ? C.shadowRed : "none" },
-    outline: { bg: "transparent", color: C.red, border: `1.5px solid ${C.red}`, shadow: "none" },
-    ghost: { bg: hov ? C.lightGray : "transparent", color: C.textSub, border: `1px solid ${C.border}`, shadow: "none" },
-    danger: { bg: hov ? "#B80500" : "#FFF0F0", color: hov ? C.white : C.red, border: `1px solid ${C.red}44`, shadow: "none" },
+    primary: { bg: hov ? C.redGradient : C.red, color: C.white, border: "none", shadow: hov ? C.shadowRed : C.shadow },
+    outline: { bg: hov ? C.redGhost : "transparent", color: C.red, border: `2px solid ${C.red}`, shadow: hov ? C.shadow : "none" },
+    ghost: { bg: hov ? C.lightGray : "transparent", color: C.textSub, border: `1px solid ${hov ? C.border : 'transparent'}`, shadow: "none" },
+    danger: { bg: hov ? C.redDark : C.redGhost, color: hov ? C.white : C.red, border: `2px solid ${C.red}44`, shadow: hov ? C.shadowRed : "none" },
+    success: { bg: hov ? C.successDark : C.success, color: C.white, border: "none", shadow: hov ? C.shadowSuccess : C.shadow },
   };
   const v = vars[variant] || vars.primary;
+  const isDisabled = disabled || loading;
+  
   return (
-    <button onClick={onClick} disabled={disabled}
-      onMouseEnter={()=>setHov(true)} onMouseLeave={()=>{setHov(false);setPress(false);}}
-      onMouseDown={()=>setPress(true)} onMouseUp={()=>setPress(false)}
-      style={{ background: v.bg, color: v.color, border: v.border, boxShadow: v.shadow, padding: pad,
-        fontSize: fs, fontWeight: 600, borderRadius: 12, cursor: disabled ? "not-allowed" : "pointer",
-        transform: press ? "scale(0.97)" : "scale(1)", transition: "all 0.15s", fontFamily: "inherit",
-        letterSpacing: 0.2, opacity: disabled ? 0.5 : 1, ...style }}>
-      {children}
+    <button onClick={onClick} disabled={isDisabled}
+      onMouseEnter={()=>!isDisabled&&setHov(true)} onMouseLeave={()=>{setHov(false);setPress(false);}}
+      onMouseDown={()=>!isDisabled&&setPress(true)} onMouseUp={()=>setPress(false)}
+      style={{ 
+        background: v.bg, 
+        color: v.color, 
+        border: v.border, 
+        boxShadow: v.shadow, 
+        padding: pad,
+        fontSize: fs, 
+        fontWeight: 600, 
+        borderRadius: 12, 
+        cursor: isDisabled ? "not-allowed" : "pointer",
+        transform: press ? "scale(0.95)" : (hov ? "scale(1.02)" : "scale(1)"), 
+        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)", 
+        fontFamily: "inherit",
+        letterSpacing: 0.3, 
+        opacity: isDisabled ? 0.6 : 1, 
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        position: "relative",
+        ...style 
+      }}>
+      {loading && <Spinner size={fs} color={v.color} />}
+      {!loading && icon && <span style={{ fontSize: fs + 2 }}>{icon}</span>}
+      <span style={{ opacity: loading ? 0 : 1, transition: "opacity 0.15s" }}>{children}</span>
     </button>
   );
 };
 
-const Input = ({ label, type="text", placeholder, value, onChange, error }) => (
-  <div style={{ marginBottom: 16 }}>
-    {label && <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>{label}</label>}
-    <input type={type} placeholder={placeholder} value={value} onChange={onChange}
-      style={{ width: "100%", padding: "11px 14px", borderRadius: 10, border: `1.5px solid ${error ? C.red : C.border}`,
-        fontSize: 14, color: C.text, background: C.white, outline: "none", boxSizing: "border-box",
-        fontFamily: "inherit", transition: "border-color 0.2s" }}
-      onFocus={e => e.target.style.borderColor = C.red}
-      onBlur={e => e.target.style.borderColor = error ? C.red : C.border} />
-    {error && <p style={{ color: C.red, fontSize: 11, marginTop: 4 }}>{error}</p>}
-  </div>
-);
-
-const Select = ({ label, value, onChange, options }) => (
-  <div style={{ marginBottom: 16 }}>
-    {label && <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>{label}</label>}
-    <select value={value} onChange={onChange}
-      style={{ width: "100%", padding: "11px 14px", borderRadius: 10, border: `1.5px solid ${C.border}`,
-        fontSize: 14, color: C.text, background: C.white, outline: "none", fontFamily: "inherit",
-        cursor: "pointer", appearance: "none", boxSizing: "border-box" }}>
-      {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-    </select>
-  </div>
-);
-
-const MetricCard = ({ label, value, change, changeDir="up", icon, accent=false }) => (
-  <Card style={{ flex: 1, minWidth: 160 }}>
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
-      <div style={{ width: 40, height: 40, borderRadius: 10, background: accent ? "#FFF0F0" : C.lightGray,
-        display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{icon}</div>
-      {change && <span style={{ fontSize: 11, fontWeight: 600, color: changeDir === "up" ? C.success : C.red,
-        background: changeDir === "up" ? C.successBg : C.redGhost, padding: "3px 8px", borderRadius: 8 }}>
-        {changeDir === "up" ? "▲" : "▼"} {change}
-      </span>}
+const Input = ({ label, type="text", placeholder, value, onChange, error, icon }) => {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div style={{ marginBottom: 16 }}>
+      {label && <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 8, letterSpacing: 0.2 }}>{label}</label>}
+      <div style={{ position: "relative" }}>
+        {icon && <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: C.textMuted }}>{icon}</span>}
+        <input 
+          type={type} 
+          placeholder={placeholder} 
+          value={value} 
+          onChange={onChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{ 
+            width: "100%", 
+            padding: icon ? "12px 14px 12px 44px" : "12px 14px", 
+            borderRadius: 10, 
+            border: `2px solid ${error ? C.red : (focused ? C.red : C.border)}`,
+            fontSize: 14, 
+            color: C.text, 
+            background: focused ? C.white : C.offWhite, 
+            outline: "none", 
+            boxSizing: "border-box",
+            fontFamily: "inherit", 
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            boxShadow: focused ? C.shadow : "none"
+          }}
+        />
+      </div>
+      {error && <p style={{ color: C.red, fontSize: 12, marginTop: 6, fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}>⚠️ {error}</p>}
     </div>
-    <div style={{ fontSize: 26, fontWeight: 800, color: accent ? C.red : C.text, letterSpacing: -1, marginBottom: 4 }}>{value}</div>
-    <div style={{ fontSize: 12, color: C.textMuted, fontWeight: 500 }}>{label}</div>
-  </Card>
-);
+  );
+};
+
+const Select = ({ label, value, onChange, options, icon, error }) => {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div style={{ marginBottom: 16 }}>
+      {label && <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 6 }}>{label}</label>}
+      <div style={{ position: "relative" }}>
+        {icon && <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: focused ? C.red : C.textMuted, transition: "color 0.2s" }}>{icon}</span>}
+        <select value={value} onChange={onChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{ 
+            width: "100%", 
+            padding: icon ? "11px 40px 11px 44px" : "11px 40px 11px 14px", 
+            borderRadius: 10, 
+            border: `1.5px solid ${error ? C.red : focused ? C.red : C.border}`,
+            fontSize: 14, 
+            color: C.text, 
+            background: focused ? C.white : C.offWhite, 
+            outline: "none", 
+            fontFamily: "inherit",
+            cursor: "pointer", 
+            appearance: "none", 
+            boxSizing: "border-box",
+            transition: "all 0.2s ease",
+            boxShadow: focused ? "0 0 0 3px rgba(225,6,0,0.08)" : "none"
+          }}>
+          {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+        <span style={{ position: "absolute", right: 14, top: "50%", transform: `translateY(-50%) rotate(${focused ? 180 : 0}deg)`, fontSize: 12, color: C.textMuted, pointerEvents: "none", transition: "transform 0.2s" }}>▼</span>
+      </div>
+      {error && <div style={{ fontSize: 12, color: C.red, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}><span>⚠️</span>{error}</div>}
+    </div>
+  );
+};
+
+const MetricCard = ({ label, value, change, changeDir="up", icon, accent=false, loading=false }) => {
+  const [hov, setHov] = useState(false);
+  
+  if (loading) {
+    return (
+      <Card style={{ flex: 1, minWidth: 160, padding: 20 }} hover={false}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: C.lightGray, animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }} />
+          <div style={{ width: 48, height: 20, borderRadius: 8, background: C.lightGray, animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }} />
+        </div>
+        <div style={{ width: "80%", height: 32, borderRadius: 8, background: C.lightGray, marginBottom: 8, animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }} />
+        <div style={{ width: "60%", height: 16, borderRadius: 6, background: C.lightGray, animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }} />
+      </Card>
+    );
+  }
+  
+  return (
+    <Card 
+      style={{ flex: 1, minWidth: 160, padding: 20, cursor: "pointer" }} 
+      hover={true}
+      glow={accent}
+      gradient={hov}
+    >
+      <div 
+        onMouseEnter={() => setHov(true)} 
+        onMouseLeave={() => setHov(false)}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+          <div style={{ 
+            width: 44, 
+            height: 44, 
+            borderRadius: 12, 
+            background: accent ? C.redGradientSubtle : C.lightGray,
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center", 
+            fontSize: 20,
+            transform: hov ? "rotate(5deg) scale(1.1)" : "rotate(0deg) scale(1)",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+          }}>
+            {icon}
+          </div>
+          {change && (
+            <span style={{ 
+              fontSize: 11, 
+              fontWeight: 700, 
+              color: changeDir === "up" ? C.success : C.red,
+              background: changeDir === "up" ? C.successBg : C.redGhost, 
+              padding: "4px 10px", 
+              borderRadius: 10,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+              boxShadow: hov ? (changeDir === "up" ? C.shadowSuccess : C.shadowRed) : "none",
+              transition: "box-shadow 0.2s"
+            }}>
+              <span style={{ fontSize: 8 }}>{changeDir === "up" ? "▲" : "▼"}</span> {change}
+            </span>
+          )}
+        </div>
+        <div style={{ 
+          fontSize: 28, 
+          fontWeight: 800, 
+          color: accent ? C.red : C.text, 
+          letterSpacing: -1.2, 
+          marginBottom: 6,
+          transition: "transform 0.2s",
+          transform: hov ? "translateX(4px)" : "translateX(0)"
+        }}>
+          {value}
+        </div>
+        <div style={{ fontSize: 12, color: C.textMuted, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>{label}</div>
+      </div>
+    </Card>
+  );
+};
 
 const AnimCounter = ({ end, prefix="", suffix="" }) => {
   const [val, setVal] = useState(0);
@@ -154,6 +372,958 @@ const AnimCounter = ({ end, prefix="", suffix="" }) => {
     return () => clearInterval(t);
   }, [end]);
   return <span>{prefix}{val.toLocaleString()}{suffix}</span>;
+};
+
+// Loading Skeleton Component
+const Skeleton = ({ width = "100%", height = 20, borderRadius = 8, style = {} }) => (
+  <div style={{ 
+    width, 
+    height, 
+    borderRadius, 
+    background: "linear-gradient(90deg, #F5F5F7 25%, #E8E8ED 50%, #F5F5F7 75%)",
+    backgroundSize: "200% 100%",
+    animation: "shimmer 2s infinite",
+    ...style 
+  }} />
+);
+
+// Spinner Component
+const Spinner = ({ size = 24, color = C.red }) => (
+  <div style={{
+    width: size,
+    height: size,
+    border: `3px solid ${C.lightGray}`,
+    borderTop: `3px solid ${color}`,
+    borderRadius: "50%",
+    animation: "spin 0.8s linear infinite"
+  }} />
+);
+
+// Pulse Animation Component
+const PulseIndicator = ({ color = C.success, size = 12 }) => (
+  <div style={{ position: "relative", width: size, height: size }}>
+    <div style={{ 
+      position: "absolute", 
+      width: size, 
+      height: size, 
+      borderRadius: "50%", 
+      background: color,
+      animation: "pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite"
+    }} />
+    <div style={{ 
+      position: "absolute", 
+      width: size, 
+      height: size, 
+      borderRadius: "50%", 
+      background: color,
+      opacity: 0.5,
+      animation: "pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite"
+    }} />
+  </div>
+);
+
+// Add CSS animations
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(0.95); }
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(1); opacity: 0.5; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(100%); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideOutDown {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(100%); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST NOTIFICATION SYSTEM
+═══════════════════════════════════════════════════════════════ */
+const Toast = ({ message, type = "info", onClose, duration = 4000 }) => {
+  const [visible, setVisible] = useState(true);
+  const [exiting, setExiting] = useState(false);
+
+  useEffect(() => {
+    if (duration > 0) {
+      const timer = setTimeout(() => handleClose(), duration);
+      return () => clearTimeout(timer);
+    }
+  }, [duration]);
+
+  const handleClose = () => {
+    setExiting(true);
+    setTimeout(() => {
+      setVisible(false);
+      onClose && onClose();
+    }, 300);
+  };
+
+  if (!visible) return null;
+
+  const styles = {
+    success: { bg: "linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)", border: "#10B981", icon: "✓", iconBg: "#10B981" },
+    error: { bg: "linear-gradient(135deg, #FFF0F0 0%, #FFE5E5 100%)", border: C.red, icon: "✕", iconBg: C.red },
+    warning: { bg: "linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)", border: "#F59E0B", icon: "⚠", iconBg: "#F59E0B" },
+    info: { bg: "linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)", border: "#3B82F6", icon: "ℹ", iconBg: "#3B82F6" },
+  };
+  const s = styles[type] || styles.info;
+
+  return (
+    <div style={{
+      background: s.bg,
+      border: `1px solid ${s.border}`,
+      borderRadius: 12,
+      padding: "14px 16px",
+      minWidth: 320,
+      maxWidth: 400,
+      boxShadow: "0 10px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1)",
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      animation: exiting ? "slideOutDown 0.3s ease-out" : "slideInUp 0.3s ease-out",
+      backdropFilter: "blur(12px)",
+    }}>
+      <div style={{
+        width: 32,
+        height: 32,
+        borderRadius: 8,
+        background: s.iconBg,
+        color: C.white,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 16,
+        fontWeight: 700,
+        flexShrink: 0
+      }}>
+        {s.icon}
+      </div>
+      <div style={{ flex: 1, fontSize: 13, color: C.text, fontWeight: 500 }}>{message}</div>
+      <button
+        onClick={handleClose}
+        style={{
+          background: "none",
+          border: "none",
+          color: C.textMuted,
+          cursor: "pointer",
+          fontSize: 18,
+          padding: 4,
+          lineHeight: 1,
+          opacity: 0.6,
+          transition: "opacity 0.15s"
+        }}
+        onMouseEnter={e => e.target.style.opacity = 1}
+        onMouseLeave={e => e.target.style.opacity = 0.6}
+      >
+        ×
+      </button>
+    </div>
+  );
+};
+
+// Toast Container for managing multiple toasts
+const ToastContainer = ({ toasts, removeToast }) => (
+  <div style={{
+    position: "fixed",
+    bottom: 24,
+    right: 24,
+    zIndex: 9999,
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
+    pointerEvents: "none"
+  }}>
+    {toasts.map(toast => (
+      <div key={toast.id} style={{ pointerEvents: "auto" }}>
+        <Toast {...toast} onClose={() => removeToast(toast.id)} />
+      </div>
+    ))}
+  </div>
+);
+
+/* ═══════════════════════════════════════════════════════════════
+   EMPTY STATE COMPONENT
+═══════════════════════════════════════════════════════════════ */
+const EmptyState = ({ icon = "📭", title, description, action, actionLabel }) => (
+  <div style={{
+    textAlign: "center",
+    padding: "60px 20px",
+    animation: "fadeIn 0.4s ease-out"
+  }}>
+    <div style={{
+      fontSize: 64,
+      marginBottom: 16,
+      opacity: 0.5,
+      animation: "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite"
+    }}>
+      {icon}
+    </div>
+    <h3 style={{
+      fontSize: 18,
+      fontWeight: 700,
+      color: C.text,
+      marginBottom: 8,
+      letterSpacing: -0.3
+    }}>
+      {title}
+    </h3>
+    {description && (
+      <p style={{
+        fontSize: 13,
+        color: C.textMuted,
+        marginBottom: 24,
+        maxWidth: 400,
+        margin: "0 auto 24px"
+      }}>
+        {description}
+      </p>
+    )}
+    {action && actionLabel && (
+      <Btn variant="primary" onClick={action}>
+        {actionLabel}
+      </Btn>
+    )}
+  </div>
+);
+
+/* ═══════════════════════════════════════════════════════════════
+   ENHANCED TABLE COMPONENT
+═══════════════════════════════════════════════════════════════ */
+const Table = ({ columns, data, loading, onRowClick, onRowContextMenu, stickyHeader = false, striped = false }) => {
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortDirection, setSortDirection] = useState("asc");
+
+  const handleSort = (columnKey) => {
+    if (!columnKey) return;
+    if (sortColumn === columnKey) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(columnKey);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedData = sortColumn
+    ? [...data].sort((a, b) => {
+        const aVal = a[sortColumn];
+        const bVal = b[sortColumn];
+        const modifier = sortDirection === "asc" ? 1 : -1;
+        if (typeof aVal === "number") return (aVal - bVal) * modifier;
+        return String(aVal).localeCompare(String(bVal)) * modifier;
+      })
+    : data;
+
+  const handleContextMenu = (e, row) => {
+    if (onRowContextMenu) {
+      e.preventDefault();
+      onRowContextMenu(e, row);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div>
+        <div style={{ borderBottom: `1px solid ${C.border}`, display: "flex", padding: "8px 12px" }}>
+          {columns.map((col, i) => (
+            <div key={i} style={{ flex: 1 }}>
+              <Skeleton width="60%" height={16} />
+            </div>
+          ))}
+        </div>
+        {[1, 2, 3, 4, 5].map(i => (
+          <div key={i} style={{ borderBottom: `1px solid ${C.borderLight}`, display: "flex", padding: "11px 12px" }}>
+            {columns.map((col, j) => (
+              <div key={j} style={{ flex: 1 }}>
+                <Skeleton width="80%" height={14} />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <EmptyState
+        icon="📋"
+        title="No Data Available"
+        description="There are no records to display at this time."
+      />
+    );
+  }
+
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+        <thead style={{ position: stickyHeader ? "sticky" : "static", top: 0, background: C.white, zIndex: 10 }}>
+          <tr style={{ borderBottom: `1px solid ${C.border}` }}>
+            {columns.map((col, i) => (
+              <th
+                key={i}
+                onClick={() => col.sortable && handleSort(col.key)}
+                style={{
+                  padding: "10px 12px",
+                  textAlign: col.align || "left",
+                  color: C.textMuted,
+                  fontWeight: 600,
+                  fontSize: 11,
+                  letterSpacing: 0.5,
+                  cursor: col.sortable ? "pointer" : "default",
+                  userSelect: "none",
+                  transition: "color 0.15s"
+                }}
+                onMouseEnter={e => col.sortable && (e.target.style.color = C.red)}
+                onMouseLeave={e => col.sortable && (e.target.style.color = C.textMuted)}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 4, justifyContent: col.align === "right" ? "flex-end" : "flex-start" }}>
+                  {col.label}
+                  {col.sortable && (
+                    <span style={{ fontSize: 10, opacity: sortColumn === col.key ? 1 : 0.3 }}>
+                      {sortColumn === col.key && sortDirection === "desc" ? "▼" : "▲"}
+                    </span>
+                  )}
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sortedData.map((row, i) => (
+            <tr
+              key={row.id || i}
+              onClick={() => onRowClick && onRowClick(row)}
+              onContextMenu={(e) => handleContextMenu(e, row)}
+              style={{
+                borderBottom: `1px solid ${C.borderLight}`,
+                background: striped && i % 2 === 1 ? C.offWhite : "transparent",
+                cursor: onRowClick || onRowContextMenu ? "pointer" : "default",
+                transition: "all 0.15s ease"
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = C.lightGray;
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = striped && i % 2 === 1 ? C.offWhite : "transparent";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              {columns.map((col, j) => (
+                <td
+                  key={j}
+                  style={{
+                    padding: "11px 12px",
+                    textAlign: col.align || "left",
+                    color: col.color ? col.color(row) : C.text,
+                    fontWeight: col.bold ? 600 : 400,
+                    fontFamily: col.mono ? "monospace" : "inherit"
+                  }}
+                >
+                  {col.render ? col.render(row) : row[col.key]}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   TOOLTIP WRAPPER COMPONENT
+═══════════════════════════════════════════════════════════════ */
+const TooltipWrapper = ({ children, content, position = "top" }) => {
+  const [show, setShow] = useState(false);
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const triggerRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setCoords({ x: rect.left + rect.width / 2, y: rect.top });
+    }
+    setShow(true);
+  };
+
+  return (
+    <div
+      ref={triggerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={() => setShow(false)}
+      style={{ position: "relative", display: "inline-block" }}
+    >
+      {children}
+      {show && content && (
+        <div style={{
+          position: "fixed",
+          left: coords.x,
+          top: position === "top" ? coords.y - 8 : coords.y + 32,
+          transform: position === "top" ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+          background: "rgba(0, 0, 0, 0.9)",
+          color: C.white,
+          padding: "6px 12px",
+          borderRadius: 6,
+          fontSize: 12,
+          fontWeight: 500,
+          whiteSpace: "nowrap",
+          zIndex: 10000,
+          pointerEvents: "none",
+          animation: "fadeIn 0.15s ease-out",
+          backdropFilter: "blur(8px)"
+        }}>
+          {content}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM CHART TOOLTIP
+═══════════════════════════════════════════════════════════════ */
+const CustomChartTooltip = ({ active, payload, label, formatter }) => {
+  if (!active || !payload || !payload.length) return null;
+
+  return (
+    <div style={{
+      background: "rgba(255, 255, 255, 0.98)",
+      border: `1px solid ${C.border}`,
+      borderRadius: 10,
+      padding: "10px 14px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+      backdropFilter: "blur(12px)",
+      animation: "scaleIn 0.15s ease-out"
+    }}>
+      {label && (
+        <div style={{ fontSize: 11, color: C.textMuted, fontWeight: 600, marginBottom: 6, letterSpacing: 0.3 }}>
+          {label}
+        </div>
+      )}
+      {payload.map((entry, i) => (
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: i < payload.length - 1 ? 4 : 0 }}>
+          <div style={{ width: 8, height: 8, borderRadius: 2, background: entry.color }} />
+          <span style={{ fontSize: 12, color: C.text, fontWeight: 500 }}>
+            {entry.name}: <strong>{formatter ? formatter(entry.value) : entry.value}</strong>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL SEARCH COMPONENT (Cmd+K / Ctrl+K)
+═══════════════════════════════════════════════════════════════ */
+const GlobalSearch = ({ isOpen, onClose, onNavigate, role }) => {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const inputRef = useRef(null);
+
+  // Search items based on role
+  const searchableItems = {
+    trader: [
+      { id: "overview", icon: "📊", label: "Overview", category: "Navigation" },
+      { id: "portfolios", icon: "💼", label: "Portfolios", category: "Navigation" },
+      { id: "positions", icon: "📋", label: "Positions", category: "Navigation" },
+      { id: "trades", icon: "🔄", label: "Trade History", category: "Navigation" },
+      { id: "ai", icon: "🤖", label: "AI Advisor", category: "Navigation" },
+      { id: "create-portfolio", icon: "➕", label: "Create Portfolio", category: "Action" },
+      { id: "settings", icon: "⚙️", label: "Settings", category: "Action" },
+      { id: "logout", icon: "🚪", label: "Logout", category: "Action" },
+    ],
+    analyst: [
+      { id: "overview", icon: "📊", label: "Overview", category: "Navigation" },
+      { id: "trends", icon: "📉", label: "Market Trends", category: "Navigation" },
+      { id: "heatmap", icon: "🌡", label: "Risk Heatmap", category: "Navigation" },
+      { id: "performance", icon: "🏆", label: "Performance", category: "Navigation" },
+      { id: "reports", icon: "📋", label: "Reports", category: "Navigation" },
+    ],
+    risk_manager: [
+      { id: "overview", icon: "📊", label: "Overview", category: "Navigation" },
+      { id: "exposure", icon: "⚠️", label: "Exposure Table", category: "Navigation" },
+      { id: "var", icon: "📉", label: "VaR Analysis", category: "Navigation" },
+      { id: "alerts", icon: "🔔", label: "Alerts", category: "Navigation" },
+      { id: "limits", icon: "🔒", label: "Risk Limits", category: "Navigation" },
+    ],
+  };
+
+  const items = searchableItems[role] || searchableItems.trader;
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setResults(items);
+      setSelectedIndex(0);
+      return;
+    }
+
+    const filtered = items.filter(item =>
+      item.label.toLowerCase().includes(query.toLowerCase()) ||
+      item.category.toLowerCase().includes(query.toLowerCase())
+    );
+    setResults(filtered);
+    setSelectedIndex(0);
+  }, [query, role]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev + 1) % results.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev - 1 + results.length) % results.length);
+    } else if (e.key === "Enter" && results[selectedIndex]) {
+      handleSelect(results[selectedIndex]);
+    } else if (e.key === "Escape") {
+      onClose();
+    }
+  };
+
+  const handleSelect = (item) => {
+    if (item.category === "Navigation") {
+      onNavigate(item.id);
+    } else if (item.id === "logout") {
+      authService.logout();
+      onNavigate("landing");
+    }
+    onClose();
+    setQuery("");
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(8px)",
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "center",
+        paddingTop: "15vh",
+        zIndex: 9999,
+        animation: "fadeIn 0.2s ease-out"
+      }}
+      onClick={onClose}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: 600,
+          maxWidth: "90vw",
+          background: C.white,
+          borderRadius: 16,
+          boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+          overflow: "hidden",
+          animation: "scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+        }}
+      >
+        {/* Search Input */}
+        <div style={{ padding: "20px 24px", borderBottom: `1px solid ${C.border}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 20, color: C.textMuted }}>🔍</span>
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Search or jump to..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              style={{
+                flex: 1,
+                border: "none",
+                outline: "none",
+                fontSize: 16,
+                fontFamily: "inherit",
+                color: C.text,
+                background: "transparent"
+              }}
+            />
+            <kbd style={{
+              padding: "4px 8px",
+              background: C.lightGray,
+              borderRadius: 6,
+              fontSize: 11,
+              fontWeight: 600,
+              color: C.textMuted
+            }}>ESC</kbd>
+          </div>
+        </div>
+
+        {/* Results */}
+        <div style={{ maxHeight: 400, overflowY: "auto" }}>
+          {results.length === 0 ? (
+            <div style={{ padding: "40px 24px", textAlign: "center", color: C.textMuted }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>🔍</div>
+              <div style={{ fontSize: 13 }}>No results found</div>
+            </div>
+          ) : (
+            results.map((item, i) => (
+              <div
+                key={item.id}
+                onClick={() => handleSelect(item)}
+                style={{
+                  padding: "12px 24px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  background: i === selectedIndex ? C.redGhost : "transparent",
+                  borderLeft: i === selectedIndex ? `3px solid ${C.red}` : "3px solid transparent",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease"
+                }}
+                onMouseEnter={() => setSelectedIndex(i)}
+              >
+                <span style={{ fontSize: 18 }}>{item.icon}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{item.label}</div>
+                  <div style={{ fontSize: 11, color: C.textMuted }}>{item.category}</div>
+                </div>
+                {i === selectedIndex && (
+                  <kbd style={{
+                    padding: "4px 8px",
+                    background: C.lightGray,
+                    borderRadius: 6,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: C.textMuted
+                  }}>↵</kbd>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Footer */}
+        <div style={{
+          padding: "12px 24px",
+          borderTop: `1px solid ${C.border}`,
+          display: "flex",
+          gap: 16,
+          fontSize: 11,
+          color: C.textMuted
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <kbd style={{ padding: "2px 6px", background: C.lightGray, borderRadius: 4 }}>↑</kbd>
+            <kbd style={{ padding: "2px 6px", background: C.lightGray, borderRadius: 4 }}>↓</kbd>
+            <span>to navigate</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <kbd style={{ padding: "2px 6px", background: C.lightGray, borderRadius: 4 }}>↵</kbd>
+            <span>to select</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYBOARD SHORTCUTS OVERLAY (? key)
+═══════════════════════════════════════════════════════════════ */
+const KeyboardShortcutsOverlay = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  const shortcuts = [
+    { category: "Navigation", items: [
+      { keys: ["Ctrl/Cmd", "K"], description: "Open command palette" },
+      { keys: ["?"], description: "Show keyboard shortcuts" },
+      { keys: ["ESC"], description: "Close dialogs" },
+    ]},
+    { category: "General", items: [
+      { keys: ["Ctrl/Cmd", "S"], description: "Save (when applicable)" },
+      { keys: ["Ctrl/Cmd", "N"], description: "New item" },
+      { keys: ["Ctrl/Cmd", "F"], description: "Find on page" },
+    ]},
+    { category: "Tables", items: [
+      { keys: ["↑", "↓"], description: "Navigate rows" },
+      { keys: ["Enter"], description: "Select row" },
+      { keys: ["Tab"], description: "Move to next cell" },
+    ]},
+  ];
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(8px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 9999,
+        animation: "fadeIn 0.2s ease-out"
+      }}
+      onClick={onClose}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: 700,
+          maxWidth: "90vw",
+          maxHeight: "80vh",
+          background: C.white,
+          borderRadius: 16,
+          boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+          overflow: "auto",
+          animation: "scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          padding: "24px 32px",
+          borderBottom: `1px solid ${C.border}`,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}>
+          <div>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: C.text, margin: 0, marginBottom: 4 }}>
+              ⌨️ Keyboard Shortcuts
+            </h2>
+            <p style={{ fontSize: 13, color: C.textMuted, margin: 0 }}>
+              Boost your productivity with these shortcuts
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 8,
+              border: `1px solid ${C.border}`,
+              background: "transparent",
+              color: C.textMuted,
+              cursor: "pointer",
+              fontSize: 16,
+              transition: "all 0.15s ease"
+            }}
+            onMouseEnter={e => {
+              e.target.style.background = C.lightGray;
+              e.target.style.color = C.text;
+            }}
+            onMouseLeave={e => {
+              e.target.style.background = "transparent";
+              e.target.style.color = C.textMuted;
+            }}
+          >✕</button>
+        </div>
+
+        {/* Shortcuts */}
+        <div style={{ padding: "24px 32px" }}>
+          {shortcuts.map((section, i) => (
+            <div key={i} style={{ marginBottom: i < shortcuts.length - 1 ? 32 : 0 }}>
+              <h3 style={{
+                fontSize: 13,
+                fontWeight: 700,
+                color: C.textMuted,
+                letterSpacing: 1,
+                marginBottom: 12,
+                textTransform: "uppercase"
+              }}>
+                {section.category}
+              </h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {section.items.map((item, j) => (
+                  <div
+                    key={j}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "10px 16px",
+                      background: C.offWhite,
+                      borderRadius: 8,
+                      transition: "all 0.15s ease"
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = C.lightGray}
+                    onMouseLeave={e => e.currentTarget.style.background = C.offWhite}
+                  >
+                    <span style={{ fontSize: 13, color: C.text }}>{item.description}</span>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      {item.keys.map((key, k) => (
+                        <kbd
+                          key={k}
+                          style={{
+                            padding: "6px 10px",
+                            background: C.white,
+                            border: `1px solid ${C.border}`,
+                            borderRadius: 6,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: C.text,
+                            boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
+                          }}
+                        >
+                          {key}
+                        </kbd>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTEXT MENU COMPONENT
+═══════════════════════════════════════════════════════════════ */
+const ContextMenu = ({ isOpen, position, items, onClose }) => {
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        onClose();
+      }
+    };
+
+    const handleEscape = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    document.addEventListener("click", handleClick);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("click", handleClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !items || items.length === 0) return null;
+
+  return (
+    <div
+      ref={menuRef}
+      style={{
+        position: "fixed",
+        left: position.x,
+        top: position.y,
+        background: C.white,
+        border: `1px solid ${C.border}`,
+        borderRadius: 10,
+        boxShadow: "0 10px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1)",
+        minWidth: 200,
+        zIndex: 10000,
+        padding: "6px 0",
+        animation: "scaleIn 0.15s ease-out",
+        backdropFilter: "blur(12px)"
+      }}
+    >
+      {items.map((item, i) => (
+        item.divider ? (
+          <div
+            key={i}
+            style={{
+              height: 1,
+              background: C.border,
+              margin: "6px 0"
+            }}
+          />
+        ) : (
+          <button
+            key={i}
+            onClick={() => {
+              if (item.onClick) item.onClick();
+              onClose();
+            }}
+            disabled={item.disabled}
+            style={{
+              width: "100%",
+              padding: "10px 16px",
+              border: "none",
+              background: "transparent",
+              textAlign: "left",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              cursor: item.disabled ? "not-allowed" : "pointer",
+              opacity: item.disabled ? 0.5 : 1,
+              transition: "all 0.15s ease",
+              fontSize: 13,
+              color: item.danger ? C.red : C.text,
+              fontFamily: "inherit"
+            }}
+            onMouseEnter={e => {
+              if (!item.disabled) {
+                e.currentTarget.style.background = item.danger ? "#FFF0F0" : C.offWhite;
+              }
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "transparent";
+            }}
+          >
+            {item.icon && <span style={{ fontSize: 16 }}>{item.icon}</span>}
+            <span style={{ flex: 1, fontWeight: 500 }}>{item.label}</span>
+            {item.shortcut && (
+              <kbd style={{
+                padding: "2px 6px",
+                background: C.lightGray,
+                borderRadius: 4,
+                fontSize: 10,
+                fontWeight: 600,
+                color: C.textMuted
+              }}>
+                {item.shortcut}
+              </kbd>
+            )}
+          </button>
+        )
+      ))}
+    </div>
+  );
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -817,26 +1987,50 @@ const Sidebar = ({ role, activePage, setActivePage, collapsed, setCollapsed }) =
       <nav style={{ flex:1, padding:"12px 8px", display:"flex", flexDirection:"column", gap:2 }}>
         {items.map(item => {
           const active = activePage === item.id;
-          return (
+          const navButton = (
             <button key={item.id} onClick={()=>setActivePage(item.id)} style={{
-              display:"flex", alignItems:"center", gap:12, padding:"11px 12px", borderRadius:10,
-              border:"none", cursor:"pointer", textAlign:"left", width:"100%", transition:"all 0.15s",
+              display:"flex", alignItems:"center", justifyContent: collapsed ? "center" : "flex-start", gap:12, padding:"11px 12px", borderRadius:10,
+              border:"none", cursor:"pointer", textAlign:"left", width:"100%", transition:"all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               background: active ? C.redGhost : "transparent",
               borderLeft: active ? `3px solid ${C.red}` : "3px solid transparent",
-            }}>
+              position: "relative"
+            }}
+            onMouseEnter={e => {
+              if (!active) e.currentTarget.style.background = C.offWhite;
+            }}
+            onMouseLeave={e => {
+              if (!active) e.currentTarget.style.background = "transparent";
+            }}
+            onFocus={e => e.currentTarget.style.outline = `2px solid ${C.red}`}
+            onBlur={e => e.currentTarget.style.outline = "none"}
+            >
               <span style={{ fontSize:17, flexShrink:0 }}>{item.icon}</span>
               {!collapsed && <span style={{ fontSize:13, fontWeight:600, color:active?C.red:C.textSub, whiteSpace:"nowrap" }}>{item.label}</span>}
             </button>
           );
+          
+          return collapsed ? (
+            <TooltipWrapper key={item.id} content={item.label} position="right">
+              {navButton}
+            </TooltipWrapper>
+          ) : navButton;
         })}
       </nav>
 
       {/* Collapse Toggle */}
       <div style={{ padding:"12px 8px", borderTop:`1px solid ${C.border}` }}>
-        <button onClick={()=>setCollapsed(!collapsed)} style={{
-          width:"100%", padding:"10px 12px", borderRadius:10, border:`1px solid ${C.border}`,
-          background:C.lightGray, cursor:"pointer", fontSize:12, color:C.textSub, fontFamily:"inherit", fontWeight:600,
-        }}>{collapsed ? "→" : "← Collapse"}</button>
+        <TooltipWrapper content={collapsed ? "Expand sidebar" : "Collapse sidebar"} position="right">
+          <button onClick={()=>setCollapsed(!collapsed)} style={{
+            width:"100%", padding:"10px 12px", borderRadius:10, border:`1px solid ${C.border}`,
+            background:C.lightGray, cursor:"pointer", fontSize:12, color:C.textSub, fontFamily:"inherit", fontWeight:600,
+            transition: "all 0.15s ease"
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = C.border}
+          onMouseLeave={e => e.currentTarget.style.background = C.lightGray}
+          onFocus={e => e.currentTarget.style.outline = `2px solid ${C.red}`}
+          onBlur={e => e.currentTarget.style.outline = "none"}
+          >{collapsed ? "→" : "← Collapse"}</button>
+        </TooltipWrapper>
       </div>
     </div>
   );
@@ -935,6 +2129,9 @@ const TopBar = ({ role, onLogout, onNavigate }) => {
 
       {/* Right side */}
       <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+        {/* Status Indicators */}
+        <StatusBar />
+        
         {/* Notifications */}
         <div style={{ position:"relative" }}>
           <button onClick={()=>setShowNotif(!showNotif)} style={{ width:38, height:38, borderRadius:10, border:`1px solid ${C.border}`, background:C.lightGray, cursor:"pointer", fontSize:16, position:"relative" }}>
@@ -1085,10 +2282,10 @@ const TraderOverview = () => {
   };
 
   // Use analytics stats if available, otherwise calculate from real data
-  const totalPortfolioValue = dashboardStats?.totalValue || portfolios.reduce((sum, p) => sum + (p.totalValue || 0), 0);
-  const totalPnL = dashboardStats?.totalPnL || portfolios.reduce((sum, p) => sum + (p.pnl || 0), 0);
-  const avgRiskScore = dashboardStats?.avgRiskScore || (portfolios.length > 0 
-    ? Math.round(portfolios.reduce((sum, p) => sum + (p.riskScore || 0), 0) / portfolios.length)
+  const totalPortfolioValue = parseFloat(dashboardStats?.totalValue) || portfolios.reduce((sum, p) => sum + (parseFloat(p.totalValue) || 0), 0);
+  const totalPnL = parseFloat(dashboardStats?.totalPnL) || portfolios.reduce((sum, p) => sum + (parseFloat(p.pnl) || 0), 0);
+  const avgRiskScore = parseInt(dashboardStats?.avgRiskScore) || (portfolios.length > 0 
+    ? Math.round(portfolios.reduce((sum, p) => sum + (parseInt(p.riskScore) || 0), 0) / portfolios.length)
     : 0);
   const openPositionsCount = dashboardStats?.openPositions || positions.filter(p => !p.isClosed).length;
   const totalTrades = dashboardStats?.totalTrades || trades.length;
@@ -1151,7 +2348,7 @@ const TraderOverview = () => {
           <select value={selectedPortfolio || ''} onChange={e=>setSelectedPortfolio(e.target.value)} style={{ width:"100%", padding:"10px 14px", borderRadius:8, border:`1px solid ${C.border}`, background:C.white, color:C.text, fontSize:13, fontFamily:"inherit", cursor:"pointer" }}>
             <option value="">All Portfolios</option>
             {portfolios.map(p=>(
-              <option key={p.id} value={p.id}>{p.name} (${(p.totalValue || 0).toLocaleString()})</option>
+              <option key={p.id} value={p.id}>{p.name} (${parseFloat(p.totalValue || 0).toLocaleString()})</option>
             ))}
           </select>
         </div>
@@ -1175,7 +2372,7 @@ const TraderOverview = () => {
               <defs><linearGradient id="pnlGrd" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.red} stopOpacity={0.15}/><stop offset="95%" stopColor={C.red} stopOpacity={0}/></linearGradient></defs>
               <XAxis dataKey="day" tick={{fontSize:9,fill:C.textMuted}} interval={4}/>
               <YAxis tick={{fontSize:9,fill:C.textMuted}} tickFormatter={v=>`$${(v/1000).toFixed(0)}K`}/>
-              <Tooltip contentStyle={{background:C.white,border:`1px solid ${C.border}`,borderRadius:8,fontSize:12}} formatter={v=>[`$${v.toLocaleString()}`, "P&L"]}/>
+              <Tooltip content={<CustomChartTooltip formatter={v => `$${v.toLocaleString()}`} />} />
               <Area type="monotone" dataKey="pnl" stroke={C.red} strokeWidth={2} fill="url(#pnlGrd)"/>
             </AreaChart>
           </ResponsiveContainer>
@@ -1228,9 +2425,9 @@ const TraderOverview = () => {
                   <td style={{ padding:"11px 12px", fontWeight:700 }}>{t.symbol}</td>
                   <td style={{ padding:"11px 12px" }}><Badge variant={t.side==="BUY"?"green":"red"}>{t.side}</Badge></td>
                   <td style={{ padding:"11px 12px", color:C.textSub }}>{t.quantity}</td>
-                  <td style={{ padding:"11px 12px", fontFamily:"monospace" }}>${t.price.toFixed(2)}</td>
-                  <td style={{ padding:"11px 12px", fontWeight:700, color:t.pnl >= 0?C.success:C.red }}>
-                    {t.pnl >= 0 ? '+' : ''}${t.pnl ? t.pnl.toFixed(2) : '0.00'}
+                  <td style={{ padding:"11px 12px", fontFamily:"monospace" }}>${parseFloat(t.price || 0).toFixed(2)}</td>
+                  <td style={{ padding:"11px 12px", fontWeight:700, color:parseFloat(t.pnl || 0) >= 0?C.success:C.red }}>
+                    {parseFloat(t.pnl || 0) >= 0 ? '+' : ''}${parseFloat(t.pnl || 0).toFixed(2)}
                   </td>
                   <td style={{ padding:"11px 12px" }}>
                     <Badge variant={t.status==="EXECUTED"?"green":t.status==="PENDING"?"blue":t.status==="CANCELLED"?"default":"red"}>
@@ -1256,6 +2453,11 @@ const TraderOverview = () => {
 const CreatePortfolioModal = ({ onClose, onCreate }) => {
   const [formData, setFormData] = useState({ name: '', description: '', strategy: 'DELTA_NEUTRAL' });
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = async () => {
     if (!formData.name) {
@@ -1270,24 +2472,155 @@ const CreatePortfolioModal = ({ onClose, onCreate }) => {
     }
   };
 
+  const handleClose = () => {
+    setMounted(false);
+    setTimeout(onClose, 200);
+  };
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') handleClose();
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, []);
+
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000 }} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{ background:C.white, borderRadius:16, padding:32, width:480, boxShadow:C.shadowMd }}>
+    <div 
+      style={{ 
+        position:"fixed", 
+        inset:0, 
+        background:"rgba(0,0,0,0.5)", 
+        backdropFilter: "blur(4px)",
+        display:"flex", 
+        alignItems:"center", 
+        justifyContent:"center", 
+        zIndex:1000,
+        animation: mounted ? "fadeIn 0.2s ease-out" : "none",
+        opacity: mounted ? 1 : 0
+      }} 
+      onClick={handleClose}
+    >
+      <div 
+        onClick={e=>e.stopPropagation()} 
+        style={{ 
+          background:C.white, 
+          borderRadius:16, 
+          padding:32, 
+          width:480, 
+          maxWidth: "90vw",
+          boxShadow:"0 20px 60px rgba(0,0,0,0.3)",
+          animation: mounted ? "scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)" : "none",
+          transform: mounted ? "scale(1)" : "scale(0.9)"
+        }}
+      >
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
           <h2 style={{ fontSize:20, fontWeight:800, color:C.text, letterSpacing:-0.5, margin:0 }}>Create New Portfolio</h2>
-          <button onClick={onClose} style={{ width:32, height:32, borderRadius:8, border:`1px solid ${C.border}`, background:"transparent", color:C.textMuted, cursor:"pointer", fontSize:16 }}>✕</button>
+          <button 
+            onClick={handleClose} 
+            style={{ 
+              width:32, 
+              height:32, 
+              borderRadius:8, 
+              border:`1px solid ${C.border}`, 
+              background:"transparent", 
+              color:C.textMuted, 
+              cursor:"pointer", 
+              fontSize:16,
+              transition: "all 0.15s ease"
+            }}
+            onMouseEnter={e => {
+              e.target.style.background = C.lightGray;
+              e.target.style.color = C.text;
+            }}
+            onMouseLeave={e => {
+              e.target.style.background = "transparent";
+              e.target.style.color = C.textMuted;
+            }}
+          >✕</button>
         </div>
         <div style={{ marginBottom:16 }}>
           <label style={{ display:"block", fontSize:12, fontWeight:600, color:C.textSub, marginBottom:6 }}>Portfolio Name *</label>
-          <input value={formData.name} onChange={e=>setFormData({...formData,name:e.target.value})} placeholder="My Hedging Portfolio" style={{ width:"100%", padding:"10px 14px", borderRadius:8, border:`1px solid ${C.border}`, fontSize:13, fontFamily:"inherit", outline:"none", boxSizing:"border-box" }} />
+          <input 
+            value={formData.name} 
+            onChange={e=>setFormData({...formData,name:e.target.value})} 
+            placeholder="My Hedging Portfolio" 
+            autoFocus
+            style={{ 
+              width:"100%", 
+              padding:"10px 14px", 
+              borderRadius:8, 
+              border:`1px solid ${C.border}`, 
+              fontSize:13, 
+              fontFamily:"inherit", 
+              outline:"none", 
+              boxSizing:"border-box",
+              transition: "all 0.2s ease"
+            }}
+            onFocus={e => {
+              e.target.style.borderColor = C.red;
+              e.target.style.boxShadow = "0 0 0 3px rgba(225,6,0,0.08)";
+            }}
+            onBlur={e => {
+              e.target.style.borderColor = C.border;
+              e.target.style.boxShadow = "none";
+            }}
+          />
         </div>
         <div style={{ marginBottom:16 }}>
           <label style={{ display:"block", fontSize:12, fontWeight:600, color:C.textSub, marginBottom:6 }}>Description</label>
-          <textarea value={formData.description} onChange={e=>setFormData({...formData,description:e.target.value})} placeholder="Optional description" rows={3} style={{ width:"100%", padding:"10px 14px", borderRadius:8, border:`1px solid ${C.border}`, fontSize:13, fontFamily:"inherit", outline:"none", resize:"vertical", boxSizing:"border-box" }} />
+          <textarea 
+            value={formData.description} 
+            onChange={e=>setFormData({...formData,description:e.target.value})} 
+            placeholder="Optional description" 
+            rows={3} 
+            style={{ 
+              width:"100%", 
+              padding:"10px 14px", 
+              borderRadius:8, 
+              border:`1px solid ${C.border}`, 
+              fontSize:13, 
+              fontFamily:"inherit", 
+              outline:"none", 
+              resize:"vertical", 
+              boxSizing:"border-box",
+              transition: "all 0.2s ease"
+            }}
+            onFocus={e => {
+              e.target.style.borderColor = C.red;
+              e.target.style.boxShadow = "0 0 0 3px rgba(225,6,0,0.08)";
+            }}
+            onBlur={e => {
+              e.target.style.borderColor = C.border;
+              e.target.style.boxShadow = "none";
+            }}
+          />
         </div>
         <div style={{ marginBottom:24 }}>
           <label style={{ display:"block", fontSize:12, fontWeight:600, color:C.textSub, marginBottom:6 }}>Strategy</label>
-          <select value={formData.strategy} onChange={e=>setFormData({...formData,strategy:e.target.value})} style={{ width:"100%", padding:"10px 14px", borderRadius:8, border:`1px solid ${C.border}`, fontSize:13, fontFamily:"inherit", cursor:"pointer", boxSizing:"border-box" }}>
+          <select 
+            value={formData.strategy} 
+            onChange={e=>setFormData({...formData,strategy:e.target.value})} 
+            style={{ 
+              width:"100%", 
+              padding:"10px 14px", 
+              borderRadius:8, 
+              border:`1px solid ${C.border}`, 
+              fontSize:13, 
+              fontFamily:"inherit", 
+              cursor:"pointer", 
+              boxSizing:"border-box",
+              transition: "all 0.2s ease"
+            }}
+            onFocus={e => {
+              e.target.style.borderColor = C.red;
+              e.target.style.boxShadow = "0 0 0 3px rgba(225,6,0,0.08)";
+            }}
+            onBlur={e => {
+              e.target.style.borderColor = C.border;
+              e.target.style.boxShadow = "none";
+            }}
+          >
             <option value="DELTA_NEUTRAL">Delta Neutral</option>
             <option value="GAMMA_SCALPING">Gamma Scalping</option>
             <option value="VEGA_HEDGING">Vega Hedging</option>
@@ -1296,10 +2629,10 @@ const CreatePortfolioModal = ({ onClose, onCreate }) => {
           </select>
         </div>
         <div style={{ display:"flex", gap:10 }}>
-          <Btn variant="primary" style={{ flex:1 }} onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Creating...' : 'Create Portfolio'}
+          <Btn variant="primary" style={{ flex:1 }} onClick={handleSubmit} loading={loading}>
+            Create Portfolio
           </Btn>
-          <Btn variant="ghost" onClick={onClose}>Cancel</Btn>
+          <Btn variant="ghost" onClick={handleClose}>Cancel</Btn>
         </div>
       </div>
     </div>
@@ -1432,7 +2765,7 @@ const CreateTradeModal = ({ onClose, onCreate, portfolios }) => {
             <select value={formData.portfolioId} onChange={e=>setFormData({...formData,portfolioId:e.target.value})} style={{ width:"100%", padding:"10px 14px", borderRadius:8, border:`1px solid ${C.border}`, fontSize:13, fontFamily:"inherit", cursor:"pointer", boxSizing:"border-box" }}>
               <option value="">Select portfolio...</option>
               {portfolios.map(p=>(
-                <option key={p.id} value={p.id}>{p.name} (${(p.totalValue || 0).toLocaleString()})</option>
+                <option key={p.id} value={p.id}>{p.name} (${parseFloat(p.totalValue || 0).toLocaleString()})</option>
               ))}
             </select>
           </div>
@@ -1743,10 +3076,10 @@ const PortfoliosPage = () => {
     }
   };
 
-  const totalValue = portfolios.reduce((sum, p) => sum + (p.totalValue || 0), 0);
-  const totalPnL = portfolios.reduce((sum, p) => sum + (p.pnl || 0), 0);
+  const totalValue = portfolios.reduce((sum, p) => sum + (parseFloat(p.totalValue) || 0), 0);
+  const totalPnL = portfolios.reduce((sum, p) => sum + (parseFloat(p.pnl) || 0), 0);
   const avgRiskScore = portfolios.length > 0 
-    ? portfolios.reduce((sum, p) => sum + (p.riskScore || 0), 0) / portfolios.length
+    ? portfolios.reduce((sum, p) => sum + (parseInt(p.riskScore) || 0), 0) / portfolios.length
     : 0;
 
   return (
@@ -1809,12 +3142,12 @@ const PortfoliosPage = () => {
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
                 <div>
                   <div style={{ fontSize:10, color:C.textMuted, fontWeight:600, letterSpacing:0.5, marginBottom:4 }}>VALUE</div>
-                  <div style={{ fontSize:18, fontWeight:800, color:C.text }}>${(portfolio.totalValue || 0).toLocaleString()}</div>
+                  <div style={{ fontSize:18, fontWeight:800, color:C.text }}>${parseFloat(portfolio.totalValue || 0).toLocaleString()}</div>
                 </div>
                 <div>
                   <div style={{ fontSize:10, color:C.textMuted, fontWeight:600, letterSpacing:0.5, marginBottom:4 }}>P&L</div>
-                  <div style={{ fontSize:18, fontWeight:800, color:(portfolio.pnl || 0) >= 0 ? C.success : C.red }}>
-                    {(portfolio.pnl || 0) >= 0 ? '+' : ''}${(portfolio.pnl || 0).toFixed(2)}
+                  <div style={{ fontSize:18, fontWeight:800, color:parseFloat(portfolio.pnl || 0) >= 0 ? C.success : C.red }}>
+                    {parseFloat(portfolio.pnl || 0) >= 0 ? '+' : ''}${parseFloat(portfolio.pnl || 0).toFixed(2)}
                   </div>
                 </div>
               </div>
@@ -1846,6 +3179,7 @@ const PositionsPage = () => {
   const [portfolios, setPortfolios] = useState([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showNewPosition, setShowNewPosition] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1865,6 +3199,19 @@ const PositionsPage = () => {
     };
     fetchData();
   }, []);
+  
+  const handleCreatePosition = async (positionData) => {
+    try {
+      await positionService.createPosition(positionData);
+      // Reload positions
+      const positionsData = await positionService.getAllPositions();
+      setPositions(positionsData || []);
+      setShowNewPosition(false);
+    } catch (err) {
+      console.error("Failed to create position:", err);
+      throw err; // Re-throw to let modal handle the error
+    }
+  };
 
   const filteredPositions = selectedPortfolio 
     ? positions.filter(p => p.portfolioId === selectedPortfolio)
@@ -1888,7 +3235,7 @@ const PositionsPage = () => {
             </select>
           </div>
           <div style={{ display:"flex", alignItems:"flex-end" }}>
-            <Btn variant="primary" size="sm">+ New Position</Btn>
+            <Btn variant="primary" size="sm" onClick={() => {setShowNewPosition(true)}}>+ New Position</Btn>
           </div>
         </div>
       </Card>
@@ -1902,19 +3249,19 @@ const PositionsPage = () => {
         <Card style={{ padding:20 }}>
           <div style={{ fontSize:11, color:C.textMuted, fontWeight:600, letterSpacing:0.5, marginBottom:8 }}>TOTAL DELTA</div>
           <div style={{ fontSize:28, fontWeight:800, color:C.text }}>
-            {openPositions.reduce((sum, p) => sum + (p.delta || 0), 0).toFixed(2)}
+            {openPositions.reduce((sum, p) => sum + (parseFloat(p.delta) || 0), 0).toFixed(2)}
           </div>
         </Card>
         <Card style={{ padding:20 }}>
           <div style={{ fontSize:11, color:C.textMuted, fontWeight:600, letterSpacing:0.5, marginBottom:8 }}>TOTAL GAMMA</div>
           <div style={{ fontSize:28, fontWeight:800, color:C.text }}>
-            {openPositions.reduce((sum, p) => sum + (p.gamma || 0), 0).toFixed(3)}
+            {openPositions.reduce((sum, p) => sum + (parseFloat(p.gamma) || 0), 0).toFixed(3)}
           </div>
         </Card>
         <Card style={{ padding:20 }}>
           <div style={{ fontSize:11, color:C.textMuted, fontWeight:600, letterSpacing:0.5, marginBottom:8 }}>TOTAL VEGA</div>
           <div style={{ fontSize:28, fontWeight:800, color:C.text }}>
-            {openPositions.reduce((sum, p) => sum + (p.vega || 0), 0).toFixed(2)}
+            {openPositions.reduce((sum, p) => sum + (parseFloat(p.vega) || 0), 0).toFixed(2)}
           </div>
         </Card>
       </div>
@@ -1939,15 +3286,15 @@ const PositionsPage = () => {
                   <td style={{ padding:"11px 12px", fontWeight:700 }}>{pos.symbol}</td>
                   <td style={{ padding:"11px 12px" }}><Badge variant={pos.type==="CALL"?"green":"red"}>{pos.type}</Badge></td>
                   <td style={{ padding:"11px 12px" }}>{pos.quantity}</td>
-                  <td style={{ padding:"11px 12px", fontFamily:"monospace" }}>${pos.entryPrice?.toFixed(2) || '0.00'}</td>
-                  <td style={{ padding:"11px 12px", fontFamily:"monospace" }}>${pos.currentPrice?.toFixed(2) || '0.00'}</td>
-                  <td style={{ padding:"11px 12px", fontWeight:700, color:(pos.pnl || 0) >= 0?C.success:C.red }}>
-                    {(pos.pnl || 0) >= 0 ? '+' : ''}${(pos.pnl || 0).toFixed(2)}
+                  <td style={{ padding:"11px 12px", fontFamily:"monospace" }}>${parseFloat(pos.entryPrice || 0).toFixed(2)}</td>
+                  <td style={{ padding:"11px 12px", fontFamily:"monospace" }}>${parseFloat(pos.currentPrice || 0).toFixed(2)}</td>
+                  <td style={{ padding:"11px 12px", fontWeight:700, color:parseFloat(pos.pnl || 0) >= 0?C.success:C.red }}>
+                    {parseFloat(pos.pnl || 0) >= 0 ? '+' : ''}${parseFloat(pos.pnl || 0).toFixed(2)}
                   </td>
-                  <td style={{ padding:"11px 12px", fontFamily:"monospace", color:C.textSub }}>{(pos.delta || 0).toFixed(3)}</td>
-                  <td style={{ padding:"11px 12px", fontFamily:"monospace", color:C.textSub }}>{(pos.gamma || 0).toFixed(4)}</td>
-                  <td style={{ padding:"11px 12px", fontFamily:"monospace", color:C.textSub }}>{(pos.vega || 0).toFixed(3)}</td>
-                  <td style={{ padding:"11px 12px", fontFamily:"monospace", color:C.textSub }}>{(pos.theta || 0).toFixed(3)}</td>
+                  <td style={{ padding:"11px 12px", fontFamily:"monospace", color:C.textSub }}>{parseFloat(pos.delta || 0).toFixed(3)}</td>
+                  <td style={{ padding:"11px 12px", fontFamily:"monospace", color:C.textSub }}>{parseFloat(pos.gamma || 0).toFixed(4)}</td>
+                  <td style={{ padding:"11px 12px", fontFamily:"monospace", color:C.textSub }}>{parseFloat(pos.vega || 0).toFixed(3)}</td>
+                  <td style={{ padding:"11px 12px", fontFamily:"monospace", color:C.textSub }}>{parseFloat(pos.theta || 0).toFixed(3)}</td>
                   <td style={{ padding:"11px 12px" }}>
                     <Btn variant="ghost" size="sm">Close</Btn>
                   </td>
@@ -1957,6 +3304,15 @@ const PositionsPage = () => {
           </table>
         )}
       </Card>
+      
+      {/* New Position Modal */}
+      {showNewPosition && (
+        <NewPositionModal 
+          onClose={() => setShowNewPosition(false)} 
+          onCreate={handleCreatePosition}
+          portfolios={portfolios}
+        />
+      )}
     </div>
   );
 };
@@ -2001,9 +3357,9 @@ const TradeHistoryPage = () => {
   const paginatedTrades = filteredTrades.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(filteredTrades.length / itemsPerPage);
 
-  const totalPnL = filteredTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-  const winningTrades = filteredTrades.filter(t => (t.pnl || 0) > 0).length;
-  const losingTrades = filteredTrades.filter(t => (t.pnl || 0) < 0).length;
+  const totalPnL = filteredTrades.reduce((sum, t) => sum + (parseFloat(t.pnl) || 0), 0);
+  const winningTrades = filteredTrades.filter(t => (parseFloat(t.pnl) || 0) > 0).length;
+  const losingTrades = filteredTrades.filter(t => (parseFloat(t.pnl) || 0) < 0).length;
   const winRate = filteredTrades.length > 0 ? ((winningTrades / filteredTrades.length) * 100).toFixed(1) : '0.0';
 
   return (
@@ -2098,10 +3454,10 @@ const TradeHistoryPage = () => {
                     <td style={{ padding:"11px 12px", fontWeight:700 }}>{t.symbol}</td>
                     <td style={{ padding:"11px 12px" }}><Badge variant={t.side==="BUY"?"green":"red"}>{t.side}</Badge></td>
                     <td style={{ padding:"11px 12px" }}>{t.quantity}</td>
-                    <td style={{ padding:"11px 12px", fontFamily:"monospace" }}>${t.price?.toFixed(2) || '0.00'}</td>
-                    <td style={{ padding:"11px 12px", fontFamily:"monospace" }}>${((t.price || 0) * t.quantity).toFixed(2)}</td>
-                    <td style={{ padding:"11px 12px", fontWeight:700, color:(t.pnl || 0) >= 0?C.success:C.red }}>
-                      {(t.pnl || 0) >= 0 ? '+' : ''}${(t.pnl || 0).toFixed(2)}
+                    <td style={{ padding:"11px 12px", fontFamily:"monospace" }}>${parseFloat(t.price || 0).toFixed(2)}</td>
+                    <td style={{ padding:"11px 12px", fontFamily:"monospace" }}>${(parseFloat(t.price || 0) * t.quantity).toFixed(2)}</td>
+                    <td style={{ padding:"11px 12px", fontWeight:700, color:parseFloat(t.pnl || 0) >= 0?C.success:C.red }}>
+                      {parseFloat(t.pnl || 0) >= 0 ? '+' : ''}${parseFloat(t.pnl || 0).toFixed(2)}
                     </td>
                     <td style={{ padding:"11px 12px" }}>
                       <Badge variant={t.status==="EXECUTED"?"green":t.status==="PENDING"?"blue":"default"}>{t.status}</Badge>
@@ -2131,6 +3487,25 @@ const Dashboard = ({ role, onNavigate }) => {
   const [activePage, setActivePage] = useState("overview");
   const [showCreateTrade, setShowCreateTrade] = useState(false);
   const [portfolios, setPortfolios] = useState([]);
+  
+  const handleExportData = () => {
+    // Simple export logic
+    const data = {
+      timestamp: new Date().toISOString(),
+      role: role,
+      page: activePage,
+      exportedBy: authService.getCurrentUser()?.email || 'Unknown'
+    };
+    
+    const csvData = `Export Report\nTimestamp,${data.timestamp}\nRole,${data.role}\nPage,${data.page}\nExported By,${data.exportedBy}\n`;
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${role}_${activePage}_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   // Fetch portfolios for trade modal
   useEffect(() => {
@@ -2196,7 +3571,7 @@ const Dashboard = ({ role, onNavigate }) => {
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
               <h1 style={{ fontSize:24, fontWeight:800, letterSpacing:-0.5, color:C.text, margin:0 }}>{pageTitle}</h1>
               <div style={{ display:"flex", gap:8 }}>
-                <Btn variant="ghost" size="sm">📥 Export</Btn>
+                <Btn variant="ghost" size="sm" onClick={handleExportData}>📥 Export</Btn>
                 <Btn variant="primary" size="sm" onClick={()=>setShowCreateTrade(true)}>+ New Trade</Btn>
               </div>
             </div>
@@ -2810,9 +4185,124 @@ const Chatbot = ({ page="" }) => {
    APP ROUTER
 ═══════════════════════════════════════════════════════════════ */
 export default function App() {
-  const [page, setPage] = useState("landing");
+  // Initialize page from URL hash or default to landing
+  const getInitialPage = () => {
+    const hash = window.location.hash.slice(1); // Remove #
+    if (!hash) {
+      // Check if user is authenticated
+      if (authService.isAuthenticated()) {
+        const user = authService.getCurrentUser();
+        if (user?.role) {
+          const roleMap = {
+            'TRADER': 'trader',
+            'ANALYST': 'analyst',
+            'RISK_MANAGER': 'risk_manager',
+            'ADMIN': 'admin'
+          };
+          return `dashboard_${roleMap[user.role] || 'trader'}`;
+        }
+      }
+      return "landing";
+    }
+    return hash;
+  };
 
-  const navigate = useCallback((p) => setPage(p), []);
+  const [page, setPage] = useState(getInitialPage);
+
+  // Navigate function that updates both state and browser history
+  const navigate = useCallback((p) => {
+    // Check authentication for dashboard pages
+    const isDashboard = p.startsWith("dashboard_");
+    if (isDashboard && !authService.isAuthenticated()) {
+      // Redirect to signin if trying to access dashboard without authentication
+      setPage("signin");
+      window.history.pushState({ page: "signin" }, "", "#signin");
+      return;
+    }
+    
+    setPage(p);
+    // Update browser URL without triggering a page reload
+    window.history.pushState({ page: p }, "", `#${p}`);
+  }, []);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = (event) => {
+      const newPage = window.location.hash.slice(1) || "landing";
+      
+      // Check authentication when navigating back to dashboard
+      const isDashboard = newPage.startsWith("dashboard_");
+      if (isDashboard && !authService.isAuthenticated()) {
+        // If not authenticated, redirect to landing
+        setPage("landing");
+        window.history.replaceState({ page: "landing" }, "", "#landing");
+        return;
+      }
+      
+      setPage(newPage);
+    };
+
+    // Listen for browser back/forward
+    window.addEventListener('popstate', handlePopState);
+    
+    // Set initial history state if none exists
+    if (!window.history.state) {
+      window.history.replaceState({ page }, "", `#${page}`);
+    }
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [page]);
+
+  // State for Phase 4 Advanced Components
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [contextMenu, setContextMenu] = useState({ isOpen: false, position: { x: 0, y: 0 }, items: [] });
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Cmd/Ctrl + K: Global search
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+      
+      // ? or Shift + /: Keyboard shortcuts overlay
+      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        e.preventDefault();
+        setShortcutsOpen(true);
+      }
+      
+      // ESC: Close all overlays
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+        setShortcutsOpen(false);
+        setContextMenu({ isOpen: false, position: { x: 0, y: 0 }, items: [] });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Prevent context menu on right click (we'll handle it programmatically)
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      // Only prevent default if we're on a dashboard page
+      if (page.startsWith('dashboard_')) {
+        // Let browser handle context menu on inputs and textareas
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+          return;
+        }
+        // Default context menu items could be added here in the future
+      }
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    return () => document.removeEventListener('contextmenu', handleContextMenu);
+  }, [page]);
 
   const getDashRole = () => {
     if(page.startsWith("dashboard_")) return page.replace("dashboard_","");
@@ -2826,17 +4316,76 @@ export default function App() {
 
   const showChatbot = page !== "landing" && page !== "signin" && page !== "signup" && page !== "forgot_password" && !isResetPassword;
 
+  // Page transition wrapper
+  const PageTransition = ({ children }) => (
+    <div 
+      key={page}
+      style={{ 
+        animation: "fadeIn 0.3s ease-out",
+        minHeight: "100vh"
+      }}
+    >
+      {children}
+    </div>
+  );
+
   return (
     <div style={{ fontFamily:"'DM Sans', 'Sora', system-ui, sans-serif", minHeight:"100vh" }}>
-      {page === "landing" && <LandingPage onNavigate={navigate} />}
-      {page === "signup" && <SignUpPage onNavigate={navigate} />}
-      {page === "signin" && <SignInPage onNavigate={navigate} />}
-      {page === "forgot_password" && <ForgotPasswordPage onNavigate={navigate} />}
-      {isResetPassword && <ResetPasswordPage onNavigate={navigate} token={resetToken || "demo-token"} />}
-      {dashRole && dashRole !== "admin" && <Dashboard role={dashRole} onNavigate={navigate} />}
-      {(page === "dashboard_admin" || dashRole === "admin") && <AdminDashboard onNavigate={navigate} />}
+      {/* Add global focus styles */}
+      <style>{`
+        *:focus-visible {
+          outline: 2px solid ${C.red};
+          outline-offset: 2px;
+          border-radius: 4px;
+        }
+        button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+          outline: 2px solid ${C.red};
+          outline-offset: 2px;
+        }
+      `}</style>
+      
+      {page === "landing" && <PageTransition><LandingPage onNavigate={navigate} /></PageTransition>}
+      {page === "signup" && <PageTransition><SignUpPage onNavigate={navigate} /></PageTransition>}
+      {page === "signin" && <PageTransition><SignInPage onNavigate={navigate} /></PageTransition>}
+      {page === "forgot_password" && <PageTransition><ForgotPasswordPage onNavigate={navigate} /></PageTransition>}
+      {isResetPassword && <PageTransition><ResetPasswordPage onNavigate={navigate} token={resetToken || "demo-token"} /></PageTransition>}
+      
+      {/* Wrap authenticated dashboard pages with RealtimeProvider */}
+      {dashRole && dashRole !== "admin" && (
+        <PageTransition>
+          <RealtimeProvider>
+            <Dashboard role={dashRole} onNavigate={navigate} />
+          </RealtimeProvider>
+        </PageTransition>
+      )}
+      
+      {(page === "dashboard_admin" || dashRole === "admin") && (
+        <PageTransition>
+          <RealtimeProvider>
+            <AdminDashboard onNavigate={navigate} />
+          </RealtimeProvider>
+        </PageTransition>
+      )}
 
       {showChatbot && <Chatbot page={page} />}
+
+      {/* Phase 4 Advanced Components */}
+      <GlobalSearch 
+        isOpen={searchOpen} 
+        onClose={() => setSearchOpen(false)} 
+        onNavigate={navigate}
+        role={dashRole || 'trader'}
+      />
+      <KeyboardShortcutsOverlay 
+        isOpen={shortcutsOpen} 
+        onClose={() => setShortcutsOpen(false)} 
+      />
+      <ContextMenu 
+        isOpen={contextMenu.isOpen}
+        position={contextMenu.position}
+        items={contextMenu.items}
+        onClose={() => setContextMenu({ isOpen: false, position: { x: 0, y: 0 }, items: [] })}
+      />
     </div>
   );
 }

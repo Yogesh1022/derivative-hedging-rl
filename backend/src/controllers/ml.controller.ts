@@ -15,13 +15,14 @@ export const mlController = {
    * GET /api/ml/health
    */
   healthCheck: asyncHandler(async (_req: Request, res: Response) => {
-    const isHealthy = await mlService.healthCheck();
+    const healthData = await mlService.healthCheck();
 
     res.json({
       success: true,
       data: {
-        status: isHealthy ? 'healthy' : 'unhealthy',
-        timestamp: new Date().toISOString(),
+        status: healthData.status,
+        model_loaded: healthData.model_loaded,
+        timestamp: healthData.timestamp || new Date().toISOString(),
       },
     });
   }),

@@ -51,13 +51,20 @@ class MLServiceClient {
   /**
    * Health check for ML service
    */
-  async healthCheck(): Promise<boolean> {
+  async healthCheck(): Promise<{
+    status: string;
+    model_loaded: boolean;
+    timestamp?: string;
+  }> {
     try {
       const response = await this.client.get('/health');
-      return response.status === 200;
+      return response.data;
     } catch (error) {
       logger.error('ML Service health check failed:', error);
-      return false;
+      return {
+        status: 'unhealthy',
+        model_loaded: false,
+      };
     }
   }
 

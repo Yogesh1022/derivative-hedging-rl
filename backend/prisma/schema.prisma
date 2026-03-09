@@ -8,23 +8,26 @@ datasource db {
 }
 
 model User {
-  id           String      @id @default(uuid())
-  email        String      @unique
-  name         String
-  password     String
-  role         UserRole    @default(TRADER)
-  status       UserStatus  @default(ACTIVE)
-  refreshToken String?
-  lastLogin    DateTime?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  auditLogs    AuditLog[]
-  portfolios   Portfolio[]
-  riskAlerts   RiskAlert[]
-  trades       Trade[]
+  id               String      @id @default(uuid())
+  email            String      @unique
+  name             String
+  password         String
+  role             UserRole    @default(TRADER)
+  status           UserStatus  @default(ACTIVE)
+  refreshToken     String?
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  lastLogin        DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  auditLogs        AuditLog[]
+  portfolios       Portfolio[]
+  riskAlerts       RiskAlert[]
+  trades           Trade[]
 
   @@index([email])
   @@index([role, status])
+  @@index([resetToken])
   @@map("users")
 }
 

@@ -1,448 +1,337 @@
 """
-═══════════════════════════════════════════════════════════════
-FASTAPI ML MICROSERVICE - MAIN APPLICATION
-═══════════════════════════════════════════════════════════════
+ML Service - Clean Rebuild
+Simplified architecture for reliable model loading
 """
 
-from fastapi import FastAPI, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, validator
-from typing import List, Optional, Dict, Any
-import numpy as np
-import joblib
-import logging
-from datetime import datetime
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+from contextlib import asynccontextmanager
+from datetime import datetime
 from pathlib import Path
+from typing import List, Optional
+import logging
+import numpy as np
 
-# ═══════════════════════════════════════════════════════════════
-# LOGGING CONFIGURATION
-# ═══════════════════════════════════════════════════════════════
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 
-# Create logs directory if it doesn't exist
-log_dir = Path("logs")
-log_dir.mkdir(exist_ok=True)
+# Configuration
+MODEL_PATH = "./models/rl_agent_ppo.zip"
+MODEL_TYPE = "PPO"
+MODEL_VERSION = "1.0.0"
 
-# Configure logging with file and console handlers
+# Setup logging
 logging.basicConfig(
-    level=logging.DEBUG,  # Log everything
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        # Console handler
-        logging.StreamHandler(),
-        # File handler for all logs
-        logging.FileHandler(log_dir / 'ml-service.log'),
-        # File handler for errors only
-        logging.FileHandler(log_dir / 'error.log', mode='a'),
-    ]
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-
-# Set error handler to only log errors
-error_handler = logging.getLogger().handlers[2]
-error_handler.setLevel(logging.ERROR)
-
 logger = logging.getLogger(__name__)
-logger.info("ML Service logging configured - logging everything to files")
 
-# ═══════════════════════════════════════════════════════════════
-# CONFIGURATION
-# ═══════════════════════════════════════════════════════════════
+# Try to import stable-baselines3
+try:
+    from stable_baselines3 import PPO, SAC
+    SB3_AVAILABLE = True
+    logger.info("stable-baselines3 imported successfully")
+except ImportError:
+    SB3_AVAILABLE = False
+    logger.warning("stable-baselines3 not available")
 
-MODEL_PATH = os.getenv("MODEL_PATH", "./models/rl_agent_ppo.pkl")
-MODEL_TYPE = os.getenv("MODEL_TYPE", "PPO")
-MODEL_VERSION = os.getenv("MODEL_VERSION", "1.0.0")
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5000").split(",")
+# ============================================================================
+# MODEL LOADING FUNCTION
+# ============================================================================
 
-# ═══════════════════════════════════════════════════════════════
+def load_rl_model():
+    """Load the RL model and return model, metadata tuple"""
+    try:
+        model_path = Path(MODEL_PATH)
+        
+        if not model_path.exists():
+            logger.warning(f"Model file not found at {MODEL_PATH}")
+            return None, {
+                "name": "Mock_Model",
+                "version": MODEL_VERSION,
+                "trained_at": "2026-01-01T00:00:00Z",
+                "sharpe_ratio": 0.0,
+                "max_drawdown": 0.0,
+                "win_rate": 0.0
+            }
+        
+        if not SB3_AVAILABLE:
+            logger.warning("stable-baselines3 not available")
+            return None, {}
+        
+        logger.info(f"Loading {MODEL_TYPE} model from {MODEL_PATH}...")
+        
+        if MODEL_TYPE.upper() == "PPO":
+            model = PPO.load(str(model_path))
+        elif MODEL_TYPE.upper() == "SAC":
+            model = SAC.load(str(model_path))
+        else:
+            raise ValueError(f"Unknown model type: {MODEL_TYPE}")
+        
+        metadata = {
+            "name": f"{MODEL_TYPE}_Curriculum_Trained",
+            "version": MODEL_VERSION,
+            "trained_at": "2026-02-24T10:59:41Z",
+            "sharpe_ratio": 1.72,
+            "max_drawdown": -0.074,
+            "win_rate": 0.682
+        }
+        
+        logger.info(f"Model loaded successfully from {MODEL_PATH}")
+        logger.info(f"Action space: {model.action_space}")
+        logger.info(f"Observation space: {model.observation_space}")
+        
+        return model, metadata
+        
+    except Exception as e:
+        logger.error(f"Error loading model: {str(e)}", exc_info=True)
+        return None, {}
+
+# ============================================================================
 # PYDANTIC MODELS
-# ═══════════════════════════════════════════════════════════════
+# ============================================================================
+
+class HealthResponse(BaseModel):
+    status: str
+    timestamp: str
+    model_loaded: bool
+
+class ModelInfo(BaseModel):
+    name: str
+    version: str
+    trained_at: str
+    performance_metrics: dict
 
 class Position(BaseModel):
-    """Position within a portfolio"""
     symbol: str
     quantity: float
-    price: float
+    entry_price: float
+    current_price: float
+    option_type: Optional[str] = None
+    strike: Optional[float] = None
+    expiry: Optional[str] = None
     delta: Optional[float] = None
     gamma: Optional[float] = None
     vega: Optional[float] = None
     theta: Optional[float] = None
 
 class PortfolioData(BaseModel):
-    """Portfolio data for ML prediction"""
-    totalValue: float = Field(..., gt=0, description="Total portfolio value")
-    positions: List[Position] = Field(..., min_items=1)
-    historicalReturns: Optional[List[float]] = None
+    positions: List[Position] = Field(..., min_length=1)
+    totalValue: float
+    cashPosition: float = 0.0
 
-class MLPredictionRequest(BaseModel):
-    """Request model for risk prediction"""
-    portfolioId: str
-    portfolioData: PortfolioData
+class RiskPrediction(BaseModel):
+    action: float
+    confidence: float
+    risk_score: float
+    hedging_recommendation: str
 
-class MLPredictionResponse(BaseModel):
-    """Response model for risk prediction"""
-    riskScore: int = Field(..., ge=0, le=100)
-    volatility: float
-    var95: float
-    var99: float
-    sharpeRatio: float
-    recommendation: str
-    confidence: float = Field(..., ge=0, le=1)
-    timestamp: str
+class BatchPredictionRequest(BaseModel):
+    portfolios: List[PortfolioData] = Field(..., min_length=1)
 
-class HedgingRecommendation(BaseModel):
-    """Hedging recommendation response"""
-    action: str
-    contracts: int
-    strategy: str
-    expectedReduction: float
+class BatchPredictionResponse(BaseModel):
+    predictions: List[RiskPrediction]
+    processing_time_ms: float
 
-class ModelInfo(BaseModel):
-    """ML model information"""
-    name: str
-    version: str
-    trained_at: str
-    performance_metrics: Dict[str, float]
+# ============================================================================
+# FASTAPI APPLICATION WITH LIFESPAN
+# ============================================================================
 
-class HealthResponse(BaseModel):
-    """Health check response"""
-    status: str
-    timestamp: str
-    model_loaded: bool
-
-# ═══════════════════════════════════════════════════════════════
-# FASTAPI APPLICATION
-# ═══════════════════════════════════════════════════════════════
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for startup/shutdown"""
+    # Startup
+    logger.info("=" * 60)
+    logger.info("ML Service Starting...")
+    logger.info(f"Model Type: {MODEL_TYPE}")
+    logger.info(f"Model Version: {MODEL_VERSION}")
+    logger.info(f"Model Path: {MODEL_PATH}")
+    logger.info("=" * 60)
+    
+    # Load model and store in app.state
+    ml_model, model_metadata = load_rl_model()
+    app.state.ml_model = ml_model
+    app.state.model_metadata = model_metadata
+    
+    if app.state.ml_model is not None:
+        logger.info("STARTUP COMPLETE - Model loaded and stored in app.state")
+        logger.info(f"Verification: app.state.ml_model is not None = {app.state.ml_model is not None}")
+    else:
+        logger.warning("STARTUP COMPLETE - Model not loaded (using mock)")
+    
+    yield
+    
+    # Shutdown
+    logger.info("ML Service shutting down...")
+    app.state.ml_model = None
+    app.state.model_metadata = None
 
 app = FastAPI(
     title="HedgeAI ML Service",
-    description="Machine Learning Microservice for Risk Prediction & Hedging",
-    version=MODEL_VERSION,
-    docs_url="/docs",
-    redoc_url="/redoc"
+    description="Machine Learning Microservice for Risk Prediction",
+    version="2.0.0",
+    lifespan=lifespan
 )
 
-# CORS Middleware
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=CORS_ORIGINS,
+    allow_origins=["http://localhost:5173", "http://localhost:5000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Request/Response Logging Middleware
-@app.middleware("http")
-async def log_requests(request, call_next):
-    """Log all incoming requests and outgoing responses"""
-    import time
-    
-    # Log request
-    logger.info(f"→ {request.method} {request.url.path}")
-    logger.debug(f"Request Headers: {dict(request.headers)}")
-    
-    # Get request body if present
-    if request.method in ["POST", "PUT", "PATCH"]:
-        body = await request.body()
-        if body:
-            logger.debug(f"Request Body: {body.decode('utf-8')[:1000]}")  # First 1000 chars
-    
-    # Process request
-    start_time = time.time()
-    response = await call_next(request)
-    duration = (time.time() - start_time) * 1000
-    
-    # Log response
-    logger.info(f"← {request.method} {request.url.path} {response.status_code} {duration:.2f}ms")
-    logger.debug(f"Response Headers: {dict(response.headers)}")
-    
-    return response
-
-# ═══════════════════════════════════════════════════════════════
-# GLOBAL MODEL INSTANCE
-# ═══════════════════════════════════════════════════════════════
-
-class MLModel:
-    """Singleton ML model manager"""
-    _instance = None
-    _model = None
-    _model_metadata = {}
-
-    @classmethod
-    def get_instance(cls):
-        if cls._instance is None:
-            cls._instance = cls()
-            cls._instance.load_model()
-        return cls._instance
-
-    def load_model(self):
-        """Load ML model from disk"""
-        try:
-            model_path = Path(MODEL_PATH)
-            
-            # Check if model file exists
-            if not model_path.exists():
-                logger.warning(f"Model file not found at {MODEL_PATH}. Using mock predictions.")
-                self._model = None
-                self._model_metadata = {
-                    "name": "PPO_v3_Mock",
-                    "version": MODEL_VERSION,
-                    "trained_at": "2025-01-15T10:30:00Z",
-                    "sharpe_ratio": 1.72,
-                    "max_drawdown": -0.074,
-                    "win_rate": 0.682
-                }
-                return
-
-            # Load actual model
-            self._model = joblib.load(model_path)
-            self._model_metadata = {
-                "name": f"{MODEL_TYPE}_Agent",
-                "version": MODEL_VERSION,
-                "trained_at": datetime.now().isoformat(),
-                "sharpe_ratio": 1.72,
-                "max_drawdown": -0.074,
-                "win_rate": 0.682
-            }
-            logger.info(f"✅ Model loaded successfully from {MODEL_PATH}")
-            
-        except Exception as e:
-            logger.error(f"❌ Error loading model: {str(e)}")
-            self._model = None
-            raise
-
-    def predict(self, portfolio_data: PortfolioData) -> Dict[str, Any]:
-        """Generate risk prediction"""
-        
-        # Extract features from portfolio
-        total_value = portfolio_data.totalValue
-        num_positions = len(portfolio_data.positions)
-        
-        # Calculate portfolio Greeks
-        total_delta = sum(p.delta or 0 for p in portfolio_data.positions)
-        total_gamma = sum(p.gamma or 0 for p in portfolio_data.positions)
-        total_vega = sum(p.vega or 0 for p in portfolio_data.positions)
-        
-        # Calculate concentration (largest position / total value)
-        max_position_value = max(p.quantity * p.price for p in portfolio_data.positions)
-        concentration = max_position_value / total_value if total_value > 0 else 0
-        
-        # If actual model exists, use it
-        if self._model is not None:
-            try:
-                # Prepare features (customize based on your model)
-                features = np.array([[
-                    total_value,
-                    num_positions,
-                    total_delta,
-                    total_gamma,
-                    total_vega,
-                    concentration
-                ]])
-                
-                # Get prediction from actual model
-                # prediction = self._model.predict(features)
-                # For now, fall through to mock
-                pass
-            except Exception as e:
-                logger.error(f"Model prediction error: {str(e)}")
-
-        # Mock prediction logic (replace with actual model inference)
-        # Risk score based on concentration and Greeks exposure
-        risk_score = min(100, int(
-            50 +  # Base risk
-            (concentration * 30) +  # Concentration risk
-            (abs(total_delta / total_value) * 20 if total_value > 0 else 0)  # Delta risk
-        ))
-        
-        # Volatility estimation
-        volatility = 0.15 + (concentration * 0.1) + np.random.uniform(-0.02, 0.02)
-        
-        # VaR estimation (95% and 99% confidence)
-        z_95 = 1.645
-        z_99 = 2.326
-        var_95 = -total_value * volatility * z_95 * np.sqrt(1/252)  # Daily VaR
-        var_99 = -total_value * volatility * z_99 * np.sqrt(1/252)
-        
-        # Sharpe ratio estimation
-        sharpe_ratio = max(0, 1.8 - (risk_score / 100) * 1.0)
-        
-        # Generate recommendation
-        if risk_score > 80:
-            recommendation = "CRITICAL: Immediate hedging required. Portfolio exposure is dangerously high."
-        elif risk_score > 65:
-            recommendation = "WARNING: Consider reducing delta exposure through delta-neutral hedging."
-        elif risk_score > 45:
-            recommendation = "MODERATE: Portfolio risk is within acceptable range. Monitor closely."
-        else:
-            recommendation = "LOW: Portfolio is well-hedged. No immediate action required."
-        
-        # Confidence based on data quality
-        confidence = 0.85 if all(p.delta is not None for p in portfolio_data.positions) else 0.65
-        
-        return {
-            "riskScore": risk_score,
-            "volatility": round(volatility, 4),
-            "var95": round(var_95, 2),
-            "var99": round(var_99, 2),
-            "sharpeRatio": round(sharpe_ratio, 4),
-            "recommendation": recommendation,
-            "confidence": round(confidence, 2),
-            "timestamp": datetime.now().isoformat()
-        }
-
-    def get_metadata(self) -> Dict[str, Any]:
-        """Get model metadata"""
-        return self._model_metadata
-
-
-# Initialize model singleton
-ml_model = MLModel.get_instance()
-
-# ═══════════════════════════════════════════════════════════════
+# ============================================================================
 # API ENDPOINTS
-# ═══════════════════════════════════════════════════════════════
+# ============================================================================
 
-@app.get("/health", response_model=HealthResponse)
-async def health_check():
+@app.get("/health")
+async def health_check() -> HealthResponse:
     """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "model_loaded": ml_model._model is not None
-    }
-
-@app.get("/model-info", response_model=ModelInfo)
-async def get_model_info():
-    """Get ML model information"""
-    metadata = ml_model.get_metadata()
-    return {
-        "name": metadata["name"],
-        "version": metadata["version"],
-        "trained_at": metadata["trained_at"],
-        "performance_metrics": {
-            "sharpe_ratio": metadata["sharpe_ratio"],
-            "max_drawdown": metadata["max_drawdown"],
-            "win_rate": metadata["win_rate"]
-        }
-    }
-
-@app.post("/predict-risk", response_model=MLPredictionResponse)
-async def predict_risk(request: MLPredictionRequest):
-    """
-    Predict risk metrics for a given portfolio
+    is_loaded = hasattr(app.state, 'ml_model') and app.state.ml_model is not None
     
-    Returns risk score, volatility, VaR, and recommendation
-    """
+    return HealthResponse(
+        status="healthy",
+        timestamp=datetime.now().isoformat(),
+        model_loaded=is_loaded
+    )
+
+@app.get("/model-info")
+async def get_model_info() -> ModelInfo:
+    """Get ML model information"""
+    if not hasattr(app.state, 'model_metadata') or not app.state.model_metadata:
+        raise HTTPException(status_code=503, detail="Model metadata not available")
+    
+    metadata = app.state.model_metadata
+    return ModelInfo(
+        name=metadata.get("name", "Unknown"),
+        version=metadata.get("version", "0.0.0"),
+        trained_at=metadata.get("trained_at", "Unknown" ),
+        performance_metrics={
+            "sharpe_ratio": metadata.get("sharpe_ratio", 0.0),
+            "max_drawdown": metadata.get("max_drawdown", 0.0),
+            "win_rate": metadata.get("win_rate", 0.0)
+        }
+    )
+
+def prepare_observation(portfolio_data: PortfolioData) -> np.ndarray:
+    """Prepare observation for RL model (11 dimensions)"""
+    total_value = portfolio_data.totalValue
+    num_positions = len(portfolio_data.positions)
+    
+    if num_positions == 0:
+        S, K, tau, sigma, r = 100.0, 100.0, 0.25, 0.2, 0.03
+        position, delta, gamma, vega = 0.0, 0.0, 0.0, 0.0
+        pnl = 0.0
+    else:
+        pos = portfolio_data.positions[0]
+        S = pos.current_price
+        K = pos.strike if pos.strike else pos.entry_price
+        tau = 0.25  # Default 3 months
+        sigma = 0.2  # Default volatility
+        r = 0.03  # Default risk-free rate
+        
+        position = pos.quantity / 100.0 if abs(pos.quantity) > 0 else 0.0
+        delta = pos.delta if pos.delta is not None else 0.0
+        gamma = pos.gamma if pos.gamma is not None else 0.0
+        vega = pos.vega if pos.vega is not None else 0.0
+        
+        pnl = (pos.current_price - pos.entry_price) * pos.quantity
+    
+    steps_remaining = 100.0
+    
+    obs = np.array([
+        S, K, tau, sigma, r,
+        position, delta, gamma, vega,
+        pnl, steps_remaining
+    ], dtype=np.float32)
+    
+    return obs
+
+@app.post("/predict-risk")
+async def predict_risk(portfolio: PortfolioData) -> RiskPrediction:
+    """Predict risk and hedging action"""
+    if not hasattr(app.state, 'ml_model') or app.state.ml_model is None:
+        # Mock prediction
+        return RiskPrediction(
+            action=0.0,
+            confidence=0.5,
+            risk_score=0.3,
+            hedging_recommendation="No model loaded - using mock prediction"
+        )
+    
     try:
-        logger.info(f"Prediction request for portfolio: {request.portfolioId}")
-        logger.debug(f"Portfolio Data: {request.portfolioData.dict()}")
+        obs = prepare_observation(portfolio)
+        action, _states = app.state.ml_model.predict(obs, deterministic=True)
+        action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
         
-        # Get prediction
-        prediction = ml_model.predict(request.portfolioData)
+        risk_score = min(abs(action_value) / 2.0, 1.0)
         
-        logger.info(f"Prediction completed: Risk Score = {prediction['riskScore']}")
-        logger.debug(f"Full Prediction: {prediction}")
-        return prediction
+        if action_value > 0.5:
+            recommendation = f"BUY {abs(action_value):.2f} units to hedge long exposure"
+        elif action_value < -0.5:
+            recommendation = f"SELL {abs(action_value):.2f} units to hedge short exposure"
+        else:
+            recommendation = "HOLD - Portfolio is well-hedged"
+        
+        return RiskPrediction(
+            action=action_value,
+            confidence=0.85,
+            risk_score=risk_score,
+            hedging_recommendation=recommendation
+        )
         
     except Exception as e:
         logger.error(f"Prediction error: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Prediction failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
-@app.post("/recommend-hedge", response_model=HedgingRecommendation)
-async def recommend_hedge(portfolio_data: Dict[str, Any]):
-    """
-    Generate hedging recommendation for portfolio
-    """
-    try:
-        total_delta = portfolio_data.get("delta", 0)
-        total_value = portfolio_data.get("totalValue", 0)
-        
-        # Simple delta hedging logic (customize based on your strategy)
-        if abs(total_delta) > 0.15 * total_value:
-            contracts_needed = int(abs(total_delta) / 100)  # Assuming 100 delta per contract
-            action = "SELL" if total_delta > 0 else "BUY"
-            strategy = "Delta Hedging"
-            expected_reduction = min(0.8, abs(total_delta) / total_value)
-        else:
-            contracts_needed = 0
-            action = "HOLD"
-            strategy = "No Action Required"
-            expected_reduction = 0.0
-        
-        return {
-            "action": action,
-            "contracts": contracts_needed,
-            "strategy": strategy,
-            "expectedReduction": expected_reduction
-        }
-        
-    except Exception as e:
-        logger.error(f"Hedging recommendation error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Recommendation failed: {str(e)}"
-        )
+@app.post("/batch-predict")
+async def batch_predict(request: BatchPredictionRequest) -> BatchPredictionResponse:
+    """Batch prediction for multiple portfolios"""
+    start_time = datetime.now()
+    predictions = []
+    
+    for portfolio in request.portfolios:
+        pred = await predict_risk(portfolio)
+        predictions.append(pred)
+    
+    processing_time = (datetime.now() - start_time).total_seconds() * 1000
+    
+    return BatchPredictionResponse(
+        predictions=predictions,
+        processing_time_ms=processing_time
+    )
 
-@app.post("/batch-predict", response_model=List[MLPredictionResponse])
-async def batch_predict(portfolios: Dict[str, List[MLPredictionRequest]]):
-    """
-    Batch prediction for multiple portfolios
-    """
-    try:
-        portfolio_list = portfolios.get("portfolios", [])
-        predictions = []
-        
-        for request in portfolio_list:
-            prediction = ml_model.predict(request.portfolioData)
-            predictions.append(prediction)
-        
-        logger.info(f"Batch prediction completed for {len(predictions)} portfolios")
-        return predictions
-        
-    except Exception as e:
-        logger.error(f"Batch prediction error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Batch prediction failed: {str(e)}"
-        )
+@app.get("/")
+async def root():
+    """Root endpoint"""
+    return {
+        "service": "HedgeAI ML Service",
+        "version": "2.0.0",
+        "status": "online",
+        "model_loaded": hasattr(app.state, 'ml_model') and app.state.ml_model is not None
+    }
 
-# ═══════════════════════════════════════════════════════════════
-# STARTUP & SHUTDOWN EVENTS
-# ═══════════════════════════════════════════════════════════════
-
-@app.on_event("startup")
-async def startup_event():
-    """Actions to perform on startup"""
-    logger.info("="*60)
-    logger.info("🚀 HedgeAI ML Service Starting...")
-    logger.info(f"   Model Type: {MODEL_TYPE}")
-    logger.info(f"   Model Version: {MODEL_VERSION}")
-    logger.info(f"   Model Path: {MODEL_PATH}")
-    logger.info("="*60)
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Actions to perform on shutdown"""
-    logger.info("Shutting down ML service...")
-
-# ═══════════════════════════════════════════════════════════════
+# ============================================================================
 # MAIN ENTRY POINT
-# ═══════════════════════════════════════════════════════════════
+# ============================================================================
 
 if __name__ == "__main__":
     import uvicorn
     
     port = int(os.getenv("PORT", 8000))
-    reload = os.getenv("RELOAD", "false").lower() == "true"
+    
+    logger.info(f"Starting ML Service on port {port}")
     
     uvicorn.run(
-        "main:app",
+        app,
         host="0.0.0.0",
         port=port,
-        reload=reload,
+        reload=False,  # Disable reload to avoid caching issues
         log_level="info"
     )

@@ -22,6 +22,8 @@ import tradeRoutes from './routes/trade.routes';
 import userRoutes from './routes/user.routes';
 import alertRoutes from './routes/alert.routes';
 import analyticsRoutes from './routes/analytics.routes';
+import realtimeRoutes from './routes/realtime.routes';
+import sseRoutes from './routes/sse.routes';
 
 const app: Application = express();
 
@@ -131,6 +133,8 @@ app.use('/api/trades', tradeRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/realtime', realtimeRoutes);
+app.use('/api/sse', sseRoutes);
 
 // ═══════════════════════════════════════════════════════════════
 // ERROR HANDLING

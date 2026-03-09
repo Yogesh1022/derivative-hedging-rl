@@ -1,5 +1,34 @@
 # 🚀 Quick Start Commands
 
+## Prerequisites
+
+### Required Services
+1. **PostgreSQL** (via Docker)
+2. **Redis** (for real-time features) - **NEW!** ⚡
+
+### Install Redis
+
+**Option 1 - Docker (Recommended)**:
+```powershell
+docker run -d --name redis -p 6379:6379 redis:alpine
+```
+
+**Option 2 - Windows (Chocolatey)**:
+```powershell
+choco install redis-64
+```
+
+**Option 3 - Windows (MSI Installer)**:
+Download from: https://github.com/microsoftarchive/redis/releases
+
+### Verify Redis is Running
+```powershell
+redis-cli ping
+# Should return: PONG
+```
+
+---
+
 ## Start the Project
 
 ### 1️⃣ One-Command Start (Recommended)
@@ -53,8 +82,14 @@ npm run dev
 # Start PostgreSQL (Docker)
 docker-compose up -d postgres
 
+# Start Redis (Docker)
+docker run -d --name redis -p 6379:6379 redis:alpine
+
 # Stop database
 docker-compose down
+
+# Stop Redis
+docker stop redis
 
 # View database UI
 cd backend
@@ -89,12 +124,62 @@ docker-compose down
 ```
 
 ### "Cannot connect to database"
+```poRedis connection error"
 ```powershell
+# Check if Redis is running
+redis-cli ping
+
+# If not running, start Redis:
+# Option 1 - Docker
+docker run -d --name redis -p 6379:6379 redis:alpine
+
+# Option 2 - Windows service (if installed via Choco/MSI)
+redis-server
+```
+
+### "wershell
 # Start Docker Desktop first, then:
 docker-compose up -d postgres
 npm run dev
-```
+```Real-Time Features ⚡ NEW!
 
+The platform now includes real-time updates via WebSocket and SSE!
+
+### What You Get
+- ✅ Real-time price updates
+- ✅ Live portfolio value streaming
+- ✅ Trade execution notifications
+- ✅ Risk breach alerts
+- ✅ Position updates
+# Install dependencies
+   npm install
+   cd backend && npm install
+   cd ../frontend && npm install
+   
+   # Start Redis (choose one)
+   docker run -d --name redis -p 6379:6379 redis:alpine
+   # OR
+   choco install redis-64sites above)
+2. **Backend automatically connects** - Look for:
+   ```
+   ✅ Redis Publisher connected
+   ✅ Redis Subscriber connected
+   🔌 WebSocket server initialized
+   ```
+3. **Frontend auto-connects** when you login
+4. **Check connection** - Look for green "🟢 LIVE" indicator in dashboard
+
+### Documentation
+- **Quick Start**: [REALTIME_QUICKSTART.md](REALTIME_QUICKSTART.md)
+- **Full Guide**: [REALTIME_FEATURES_GUIDE.md](REALTIME_FEATURES_GUIDE.md)
+- **Integration Example**: [frontend/INTEGRATION_EXAMPLE.js](frontend/INTEGRATION_EXAMPLE.js)
+
+---
+
+## 
+Start Redis | `docker run -d --name redis -p 6379:6379 redis:alpine` |
+| Check Redis | `redis-cli ping` |
+| 
 ### "CORS error"
 Already fixed! Backend configured for http://localhost:5174
 

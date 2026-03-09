@@ -7,6 +7,7 @@ import { asyncHandler } from '../middleware/error.middleware';
 import prisma from '../config/database';
 import { AuditAction } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
+import redisService, { CHANNELS } from '../services/redis.service';
 
 export const tradeController = {
   /**
@@ -137,6 +138,24 @@ export const tradeController = {
         },
       },
     });
+
+    // Publish real-time event
+    try {
+      await redisService.publish(CHANNELS.TRADE_EXECUTED, {
+        userId,
+        tradeId: trade.id,
+        portfolioId,
+        symbol,
+        side,
+        quantity: quantity.toString(),
+        price: price.toString(),
+        totalValue: totalValue.toString(),
+        timestamp: trade.executedAt?.toISOString() || new Date().toISOString(),
+      });
+    } catch (error) {
+      // Log error but don't fail the request
+      console.error('Failed to publish trade event:', error);
+    }
 
     res.status(201).json({
       success: true,
