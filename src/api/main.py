@@ -10,15 +10,15 @@ from prometheus_client import make_asgi_app
 
 from src.api.routes import (
     auth,
+    baselines,
     datasets,
     environments,
-    baselines,
     evaluations,
     experiments,
     health,
     models,
 )
-from src.api.websocket import get_socket_app, sio, get_connection_info
+from src.api.websocket import get_connection_info, get_socket_app, sio
 from src.utils.config import get_settings
 from src.utils.logger import setup_logger
 
@@ -62,25 +62,24 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 async def log_requests(request: Request, call_next):
     """Log all incoming requests and responses."""
     start_time = time.time()
-    
+
     # Log request
     logger.info(f"→ {request.method} {request.url.path}")
-    
+
     # Process request
     response = await call_next(request)
-    
+
     # Calculate duration
     process_time = time.time() - start_time
-    
+
     # Log response
     logger.info(
-        f"← {request.method} {request.url.path} "
-        f"[{response.status_code}] {process_time:.3f}s"
+        f"← {request.method} {request.url.path} " f"[{response.status_code}] {process_time:.3f}s"
     )
-    
+
     # Add custom header
     response.headers["X-Process-Time"] = str(process_time)
-    
+
     return response
 
 
@@ -126,14 +125,11 @@ async def websocket_info():
 async def websocket_test():
     """Test WebSocket broadcasting."""
     from src.api.websocket import broadcast_to_all
-    await broadcast_to_all('test_message', {
-        'message': 'Test broadcast from API',
-        'timestamp': time.time()
-    })
-    return {
-        "status": "broadcasted",
-        "message": "Test message sent to all connected clients"
-    }
+
+    await broadcast_to_all(
+        "test_message", {"message": "Test broadcast from API", "timestamp": time.time()}
+    )
+    return {"status": "broadcasted", "message": "Test message sent to all connected clients"}
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 """Data preprocessing and feature engineering."""
 
+from typing import List, Optional
+
 import numpy as np
 import pandas as pd
-from typing import List, Optional
 
 from src.utils.logger import setup_logger
 
@@ -46,9 +47,7 @@ class DataPreprocessor:
         return df
 
     @staticmethod
-    def remove_outliers(
-        df: pd.DataFrame, columns: List[str], n_std: float = 3.0
-    ) -> pd.DataFrame:
+    def remove_outliers(df: pd.DataFrame, columns: List[str], n_std: float = 3.0) -> pd.DataFrame:
         """
         Remove outliers using standard deviation method.
 

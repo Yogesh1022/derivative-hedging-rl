@@ -9,8 +9,7 @@ from sqlalchemy.future import select
 
 from src.api.schemas import Experiment, ExperimentCreate, ExperimentUpdate, User
 from src.auth.security import get_current_active_user
-from src.database import get_async_db
-from src.database import models
+from src.database import get_async_db, models
 
 router = APIRouter()
 
@@ -41,9 +40,7 @@ async def create_experiment(
     current_user: User = Depends(get_current_active_user),
 ):
     """Create a new experiment."""
-    db_experiment = models.Experiment(
-        user_id=current_user.id, **experiment.model_dump()
-    )
+    db_experiment = models.Experiment(user_id=current_user.id, **experiment.model_dump())
     db.add(db_experiment)
     await db.commit()
     await db.refresh(db_experiment)

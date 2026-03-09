@@ -9,8 +9,7 @@ from sqlalchemy.future import select
 
 from src.api.schemas import Evaluation, EvaluationCreate, EvaluationUpdate, User
 from src.auth.security import get_current_active_user
-from src.database import get_async_db
-from src.database import models
+from src.database import get_async_db, models
 
 router = APIRouter()
 
@@ -52,9 +51,7 @@ async def create_evaluation(
     if not experiment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Experiment not found")
 
-    db_evaluation = models.Evaluation(
-        experiment_id=experiment_id, **evaluation.model_dump()
-    )
+    db_evaluation = models.Evaluation(experiment_id=experiment_id, **evaluation.model_dump())
     db.add(db_evaluation)
     await db.commit()
     await db.refresh(db_evaluation)

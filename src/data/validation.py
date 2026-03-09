@@ -4,11 +4,11 @@ Ensures data quality and consistency before processing or training.
 """
 
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List
 
 import numpy as np
 import pandas as pd
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 
 class DataQualityReport(BaseModel):
@@ -44,9 +44,7 @@ class MarketDataValidator:
         self.max_missing_pct = max_missing_pct
         self.max_price_change_pct = max_price_change_pct
 
-    def validate(
-        self, df: pd.DataFrame, ticker: str = "UNKNOWN"
-    ) -> DataQualityReport:
+    def validate(self, df: pd.DataFrame, ticker: str = "UNKNOWN") -> DataQualityReport:
         """
         Validate market data DataFrame.
 
@@ -91,23 +89,16 @@ class MarketDataValidator:
         # Check 4: Price consistency (High >= Low, Close between High and Low)
         invalid_hl = (df["High"] < df["Low"]).sum()
         if invalid_hl > 0:
-            report.issues.append(
-                f"{invalid_hl} records where High < Low (impossible)"
-            )
+            report.issues.append(f"{invalid_hl} records where High < Low (impossible)")
             report.is_valid = False
 
         invalid_close = ((df["Close"] > df["High"]) | (df["Close"] < df["Low"])).sum()
         if invalid_close > 0:
-            report.warnings.append(
-                f"{invalid_close} records where Close outside [Low, High] range"
-            )
+            report.warnings.append(f"{invalid_close} records where Close outside [Low, High] range")
 
         # Check 5: Negative prices
         negative_prices = (
-            (df["Open"] <= 0)
-            | (df["High"] <= 0)
-            | (df["Low"] <= 0)
-            | (df["Close"] <= 0)
+            (df["Open"] <= 0) | (df["High"] <= 0) | (df["Low"] <= 0) | (df["Close"] <= 0)
         ).sum()
         if negative_prices > 0:
             report.issues.append(f"{negative_prices} records with non-positive prices")
@@ -131,9 +122,7 @@ class MarketDataValidator:
 
         zero_volume_pct = (df["Volume"] == 0).sum() / len(df)
         if zero_volume_pct > 0.1:
-            report.warnings.append(
-                f"{zero_volume_pct:.1%} of days have zero trading volume"
-            )
+            report.warnings.append(f"{zero_volume_pct:.1%} of days have zero trading volume")
 
         # Statistics
         report.statistics = {
@@ -167,9 +156,7 @@ class OptionsDataValidator:
         """
         self.min_strikes = min_strikes
 
-    def validate(
-        self, df: pd.DataFrame, option_type: str = "UNKNOWN"
-    ) -> DataQualityReport:
+    def validate(self, df: pd.DataFrame, option_type: str = "UNKNOWN") -> DataQualityReport:
         """
         Validate options chain DataFrame.
 
@@ -188,15 +175,13 @@ class OptionsDataValidator:
 
         # Check 1: Minimum strikes
         if len(df) < self.min_strikes:
-            report.issues.append(
-                f"Insufficient strikes: {len(df)} < {self.min_strikes} required"
-            )
+            report.issues.append(f"Insufficient strikes: {len(df)} < {self.min_strikes} required")
             report.is_valid = False
 
         # Check 2: Required columns
         required_cols = ["strike"]
         recommended_cols = ["bid", "ask", "volume", "openInterest", "impliedVolatility"]
-        
+
         missing_required = [col for col in required_cols if col not in df.columns]
         if missing_required:
             report.issues.append(f"Missing required columns: {missing_required}")
@@ -216,9 +201,7 @@ class OptionsDataValidator:
         if "bid" in df.columns and "ask" in df.columns:
             invalid_spread = (df["ask"] < df["bid"]).sum()
             if invalid_spread > 0:
-                report.issues.append(
-                    f"{invalid_spread} options with ask < bid (impossible)"
-                )
+                report.issues.append(f"{invalid_spread} options with ask < bid (impossible)")
                 report.is_valid = False
 
             negative_prices = ((df["bid"] < 0) | (df["ask"] < 0)).sum()
@@ -231,8 +214,7 @@ class OptionsDataValidator:
             invalid_iv = ((df["impliedVolatility"] <= 0) | (df["impliedVolatility"] > 5)).sum()
             if invalid_iv > 0:
                 report.warnings.append(
-                    f"{invalid_iv} options with unusual implied volatility "
-                    f"(<=0 or >500%)"
+                    f"{invalid_iv} options with unusual implied volatility " f"(<=0 or >500%)"
                 )
 
         # Check 6: Volume and open interest
@@ -285,9 +267,7 @@ class SyntheticDataValidator:
         self.min_steps = min_steps
         self.max_paths = max_paths
 
-    def validate(
-        self, paths: np.ndarray, simulator_name: str = "UNKNOWN"
-    ) -> DataQualityReport:
+    def validate(self, paths: np.ndarray, simulator_name: str = "UNKNOWN") -> DataQualityReport:
         """
         Validate synthetic price paths.
 
@@ -314,21 +294,15 @@ class SyntheticDataValidator:
 
         # Check 2: Number of paths
         if n_paths < self.min_paths:
-            report.issues.append(
-                f"Insufficient paths: {n_paths} < {self.min_paths} required"
-            )
+            report.issues.append(f"Insufficient paths: {n_paths} < {self.min_paths} required")
             report.is_valid = False
 
         if n_paths > self.max_paths:
-            report.warnings.append(
-                f"Large dataset: {n_paths} paths may cause memory issues"
-            )
+            report.warnings.append(f"Large dataset: {n_paths} paths may cause memory issues")
 
         # Check 3: Number of steps
         if n_steps < self.min_steps:
-            report.issues.append(
-                f"Insufficient time steps: {n_steps} < {self.min_steps} required"
-            )
+            report.issues.append(f"Insufficient time steps: {n_steps} < {self.min_steps} required")
             report.is_valid = False
 
         # Check 4: NaN or Inf values
@@ -386,9 +360,7 @@ class DatasetValidator:
         self.options_validator = OptionsDataValidator()
         self.synthetic_validator = SyntheticDataValidator()
 
-    def validate_market_data(
-        self, df: pd.DataFrame, ticker: str = "UNKNOWN"
-    ) -> DataQualityReport:
+    def validate_market_data(self, df: pd.DataFrame, ticker: str = "UNKNOWN") -> DataQualityReport:
         """Validate market data."""
         return self.market_validator.validate(df, ticker)
 
@@ -404,9 +376,7 @@ class DatasetValidator:
         """Validate synthetic price paths."""
         return self.synthetic_validator.validate(paths, simulator_name)
 
-    def validate_all(
-        self, data: Dict, data_type: str
-    ) -> List[DataQualityReport]:
+    def validate_all(self, data: Dict, data_type: str) -> List[DataQualityReport]:
         """
         Validate multiple datasets at once.
 
@@ -447,7 +417,9 @@ def validate_options_dataframe(df: pd.DataFrame, option_type: str = "UNKNOWN") -
     return validator.validate(df, option_type)
 
 
-def validate_synthetic_paths(paths: np.ndarray, simulator_name: str = "UNKNOWN") -> DataQualityReport:
+def validate_synthetic_paths(
+    paths: np.ndarray, simulator_name: str = "UNKNOWN"
+) -> DataQualityReport:
     """Quick validation for synthetic price paths."""
     validator = SyntheticDataValidator()
     return validator.validate(paths, simulator_name)

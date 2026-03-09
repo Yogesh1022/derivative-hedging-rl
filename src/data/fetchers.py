@@ -126,9 +126,7 @@ class YFinanceDataFetcher:
 
         for ticker in tqdm(tickers, desc="Fetching tickers"):
             try:
-                df = YFinanceDataFetcher.fetch_stock_data(
-                    ticker, start_date, end_date, interval
-                )
+                df = YFinanceDataFetcher.fetch_stock_data(ticker, start_date, end_date, interval)
                 results[ticker] = df
             except Exception as e:
                 logger.error(f"Failed to fetch {ticker}: {e}")

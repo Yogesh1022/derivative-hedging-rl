@@ -2,11 +2,12 @@
 API routes for RL environment management.
 """
 
-from typing import Optional, Dict, Any
+from datetime import datetime
+from typing import Any, Dict, Optional
+
+import numpy as np
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
-import numpy as np
-from datetime import datetime
 
 from src.environments.hedging_env import OptionHedgingEnv
 
@@ -20,7 +21,7 @@ _active_environments: Dict[str, OptionHedgingEnv] = {}
 # Request/Response Models
 class CreateEnvironmentRequest(BaseModel):
     """Request to create a new environment."""
-    
+
     S0: float = Field(default=100.0, description="Initial stock price")
     K: float = Field(default=100.0, description="Strike price")
     T: float = Field(default=1.0, description="Time to maturity in years")
@@ -28,7 +29,9 @@ class CreateEnvironmentRequest(BaseModel):
     sigma: float = Field(default=0.2, description="Volatility")
     n_steps: int = Field(default=252, description="Number of rebalancing steps")
     option_type: str = Field(default="call", description="Option type: call or put")
-    action_type: str = Field(default="continuous", description="Action type: continuous or discrete")
+    action_type: str = Field(
+        default="continuous", description="Action type: continuous or discrete"
+    )
     transaction_cost_pct: float = Field(default=0.001, description="Transaction cost as percentage")
     risk_penalty: float = Field(default=0.01, description="Risk penalty coefficient")
     seed: Optional[int] = Field(default=None, description="Random seed for reproducibility")
@@ -36,7 +39,7 @@ class CreateEnvironmentRequest(BaseModel):
 
 class EnvironmentResponse(BaseModel):
     """Response with environment details."""
-    
+
     env_id: str
     status: str
     current_step: int
@@ -47,13 +50,13 @@ class EnvironmentResponse(BaseModel):
 
 class StepRequest(BaseModel):
     """Request to step the environment."""
-    
+
     action: float = Field(description="Action to take (hedge ratio or action index)")
 
 
 class StepResponse(BaseModel):
     """Response from environment step."""
-    
+
     observation: list
     reward: float
     terminated: bool
@@ -64,7 +67,7 @@ class StepResponse(BaseModel):
 
 class EpisodeMetricsResponse(BaseModel):
     """Episode performance metrics."""
-    
+
     total_pnl: float
     total_costs: float
     net_pnl: float
@@ -78,10 +81,10 @@ class EpisodeMetricsResponse(BaseModel):
 def create_environment(request: CreateEnvironmentRequest):
     """
     Create a new hedging environment instance.
-    
+
     Args:
         request: Environment configuration
-    
+
     Returns:
         Environment details including unique ID
     """
@@ -98,14 +101,14 @@ def create_environment(request: CreateEnvironmentRequest):
         transaction_cost_pct=request.transaction_cost_pct,
         risk_penalty=request.risk_penalty,
     )
-    
+
     # Reset with seed
     env.reset(seed=request.seed)
-    
+
     # Generate unique ID
     env_id = f"env_{len(_active_environments)}_{datetime.utcnow().timestamp()}"
     _active_environments[env_id] = env
-    
+
     return EnvironmentResponse(
         env_id=env_id,
         status="active",
@@ -129,10 +132,10 @@ def create_environment(request: CreateEnvironmentRequest):
 def get_environment(env_id: str):
     """
     Get environment details.
-    
+
     Args:
         env_id: Environment ID
-    
+
     Returns:
         Environment details
     """
@@ -141,9 +144,9 @@ def get_environment(env_id: str):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Environment {env_id} not found",
         )
-    
+
     env = _active_environments[env_id]
-    
+
     return EnvironmentResponse(
         env_id=env_id,
         status="active" if env.current_step < env.n_steps else "completed",
@@ -167,11 +170,11 @@ def get_environment(env_id: str):
 def reset_environment(env_id: str, seed: Optional[int] = None):
     """
     Reset an environment to initial state.
-    
+
     Args:
         env_id: Environment ID
         seed: Optional random seed
-    
+
     Returns:
         Initial observation
     """
@@ -180,10 +183,10 @@ def reset_environment(env_id: str, seed: Optional[int] = None):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Environment {env_id} not found",
         )
-    
+
     env = _active_environments[env_id]
     obs, info = env.reset(seed=seed)
-    
+
     return StepResponse(
         observation=obs.tolist(),
         reward=0.0,
@@ -198,11 +201,11 @@ def reset_environment(env_id: str, seed: Optional[int] = None):
 def step_environment(env_id: str, request: StepRequest):
     """
     Take a step in the environment.
-    
+
     Args:
         env_id: Environment ID
         request: Step request with action
-    
+
     Returns:
         Step result with observation, reward, done flags
     """
@@ -211,15 +214,15 @@ def step_environment(env_id: str, request: StepRequest):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Environment {env_id} not found",
         )
-    
+
     env = _active_environments[env_id]
-    
+
     # Convert action based on action type
     if env.action_type == "continuous":
         action = np.array([request.action])
     else:
         action = int(request.action)
-    
+
     try:
         obs, reward, terminated, truncated, info = env.step(action)
     except Exception as e:
@@ -227,7 +230,7 @@ def step_environment(env_id: str, request: StepRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Step failed: {str(e)}",
         )
-    
+
     return StepResponse(
         observation=obs.tolist(),
         reward=float(reward),
@@ -242,10 +245,10 @@ def step_environment(env_id: str, request: StepRequest):
 def get_episode_metrics(env_id: str):
     """
     Get episode performance metrics.
-    
+
     Args:
         env_id: Environment ID
-    
+
     Returns:
         Episode metrics
     """
@@ -254,10 +257,10 @@ def get_episode_metrics(env_id: str):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Environment {env_id} not found",
         )
-    
+
     env = _active_environments[env_id]
     metrics = env.get_episode_metrics()
-    
+
     return EpisodeMetricsResponse(**metrics)
 
 
@@ -265,7 +268,7 @@ def get_episode_metrics(env_id: str):
 def delete_environment(env_id: str):
     """
     Delete an environment instance.
-    
+
     Args:
         env_id: Environment ID
     """
@@ -274,7 +277,7 @@ def delete_environment(env_id: str):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Environment {env_id} not found",
         )
-    
+
     del _active_environments[env_id]
     return None
 
@@ -283,17 +286,19 @@ def delete_environment(env_id: str):
 def list_environments():
     """
     List all active environments.
-    
+
     Returns:
         List of environment IDs and their status
     """
     envs = []
     for env_id, env in _active_environments.items():
-        envs.append({
-            "env_id": env_id,
-            "status": "active" if env.current_step < env.n_steps else "completed",
-            "current_step": env.current_step,
-            "total_steps": env.n_steps,
-        })
-    
+        envs.append(
+            {
+                "env_id": env_id,
+                "status": "active" if env.current_step < env.n_steps else "completed",
+                "current_step": env.current_step,
+                "total_steps": env.n_steps,
+            }
+        )
+
     return {"environments": envs, "count": len(envs)}

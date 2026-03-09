@@ -9,8 +9,7 @@ from sqlalchemy.future import select
 
 from src.api.schemas import TrainedModel, TrainedModelCreate, TrainedModelUpdate, User
 from src.auth.security import get_current_active_user
-from src.database import get_async_db
-from src.database import models
+from src.database import get_async_db, models
 
 router = APIRouter()
 

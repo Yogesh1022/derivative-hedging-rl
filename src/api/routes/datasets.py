@@ -1,26 +1,25 @@
 """Dataset management routes."""
 
+from datetime import datetime, timedelta
 from typing import List, Optional
 from uuid import UUID
-from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from pydantic import BaseModel, Field
 
 from src.api.schemas import Dataset, DatasetCreate, DatasetUpdate, User
 from src.auth.security import get_current_active_user
-from src.database import get_async_db
-from src.database import models
 from src.data import (
-    YFinanceDataFetcher,
+    DataPreprocessor,
     GBMSimulator,
     HestonSimulator,
-    DataPreprocessor,
+    YFinanceDataFetcher,
     validate_market_dataframe,
     validate_synthetic_paths,
 )
+from src.database import get_async_db, models
 
 router = APIRouter()
 
@@ -28,6 +27,7 @@ router = APIRouter()
 # Request/Response Models
 class FetchMarketDataRequest(BaseModel):
     """Request to fetch market data."""
+
     ticker: str = Field(..., description="Stock ticker symbol")
     start_date: Optional[str] = Field(None, description="Start date (YYYY-MM-DD)")
     end_date: Optional[str] = Field(None, description="End date (YYYY-MM-DD)")
@@ -36,6 +36,7 @@ class FetchMarketDataRequest(BaseModel):
 
 class GenerateSyntheticDataRequest(BaseModel):
     """Request to generate synthetic data."""
+
     simulator: str = Field(..., description="Simulator type: 'gbm' or 'heston'")
     n_paths: int = Field(1000, ge=100, le=100000)
     n_steps: int = Field(252, ge=50, le=1000)
@@ -53,6 +54,7 @@ class GenerateSyntheticDataRequest(BaseModel):
 
 class DataValidationResponse(BaseModel):
     """Response from data validation."""
+
     is_valid: bool
     issues: List[str]
     warnings: List[str]
@@ -60,6 +62,7 @@ class DataValidationResponse(BaseModel):
 
 
 # CRUD Endpoints
+
 
 @router.get("/", response_model=List[Dataset])
 async def list_datasets(
@@ -145,6 +148,7 @@ async def delete_dataset(
 
 # Functional Data Pipeline Endpoints
 
+
 @router.post("/fetch-market-data", status_code=status.HTTP_200_OK)
 async def fetch_market_data(
     request: FetchMarketDataRequest,
@@ -154,28 +158,30 @@ async def fetch_market_data(
 ):
     """
     Fetch market data from Yahoo Finance.
-    
+
     This endpoint fetches stock price data and optionally saves it to the database.
     """
     try:
         fetcher = YFinanceDataFetcher()
-        
+
         # Parse dates
-        start_date = datetime.strptime(request.start_date, "%Y-%m-%d") if request.start_date else None
+        start_date = (
+            datetime.strptime(request.start_date, "%Y-%m-%d") if request.start_date else None
+        )
         end_date = datetime.strptime(request.end_date, "%Y-%m-%d") if request.end_date else None
-        
+
         # Fetch data
         df = fetcher.fetch_stock_data(request.ticker, start_date, end_date)
-        
+
         if df.empty:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"No data found for ticker {request.ticker}"
+                detail=f"No data found for ticker {request.ticker}",
             )
-        
+
         # Validate data
         validation_report = validate_market_dataframe(df, request.ticker)
-        
+
         # Save to database if requested
         dataset_id = None
         if request.save_to_db:
@@ -191,13 +197,13 @@ async def fetch_market_data(
                 metadata={
                     "records": len(df),
                     "validation": validation_report.model_dump(),
-                }
+                },
             )
             db.add(db_dataset)
             await db.commit()
             await db.refresh(db_dataset)
             dataset_id = str(db_dataset.id)
-        
+
         return {
             "status": "success",
             "ticker": request.ticker,
@@ -210,11 +216,11 @@ async def fetch_market_data(
             },
             "preview": df.head().to_dict(orient="records"),
         }
-    
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch market data: {str(e)}"
+            detail=f"Failed to fetch market data: {str(e)}",
         )
 
 
@@ -226,7 +232,7 @@ async def generate_synthetic_data(
 ):
     """
     Generate synthetic price paths using GBM or Heston model.
-    
+
     This endpoint generates simulated stock prices for training/testing.
     """
     try:
@@ -254,15 +260,15 @@ async def generate_synthetic_data(
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid simulator type: {request.simulator}. Use 'gbm' or 'heston'"
+                detail=f"Invalid simulator type: {request.simulator}. Use 'gbm' or 'heston'",
             )
-        
+
         # Generate paths
         paths = simulator.simulate(request.n_paths)
-        
+
         # Validate synthetic data
         validation_report = validate_synthetic_paths(paths, request.simulator)
-        
+
         # Save to database if requested
         dataset_id = None
         if request.save_to_db:
@@ -275,13 +281,13 @@ async def generate_synthetic_data(
                     "n_paths": request.n_paths,
                     "n_steps": request.n_steps,
                     "validation": validation_report.model_dump(),
-                }
+                },
             )
             db.add(db_dataset)
             await db.commit()
             await db.refresh(db_dataset)
             dataset_id = str(db_dataset.id)
-        
+
         return {
             "status": "success",
             "simulator": request.simulator,
@@ -295,11 +301,11 @@ async def generate_synthetic_data(
             },
             "statistics": validation_report.statistics,
         }
-    
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to generate synthetic data: {str(e)}"
+            detail=f"Failed to generate synthetic data: {str(e)}",
         )
 
 
@@ -311,14 +317,14 @@ async def validate_dataset(
 ):
     """
     Validate a dataset for quality and consistency.
-    
+
     This endpoint runs validation checks on an existing dataset.
     """
     result = await db.execute(select(models.Dataset).where(models.Dataset.id == dataset_id))
     dataset = result.scalar_one_or_none()
     if not dataset:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dataset not found")
-    
+
     # Return cached validation if available
     if dataset.metadata and "validation" in dataset.metadata:
         validation_data = dataset.metadata["validation"]
@@ -328,7 +334,7 @@ async def validate_dataset(
             warnings=validation_data.get("warnings", []),
             statistics=validation_data.get("statistics", {}),
         )
-    
+
     return DataValidationResponse(
         is_valid=False,
         issues=["No validation data available for this dataset"],

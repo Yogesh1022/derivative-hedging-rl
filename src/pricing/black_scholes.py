@@ -1,8 +1,9 @@
 """Black-Scholes option pricing model."""
 
+from typing import Dict
+
 import numpy as np
 from scipy.stats import norm
-from typing import Dict
 
 
 class BlackScholesModel:
@@ -10,12 +11,7 @@ class BlackScholesModel:
 
     @staticmethod
     def price(
-        S: float,
-        K: float,
-        T: float,
-        r: float,
-        sigma: float,
-        option_type: str = "call"
+        S: float, K: float, T: float, r: float, sigma: float, option_type: str = "call"
     ) -> float:
         """
         Calculate Black-Scholes option price.
@@ -51,12 +47,7 @@ class BlackScholesModel:
 
     @staticmethod
     def greeks(
-        S: float,
-        K: float,
-        T: float,
-        r: float,
-        sigma: float,
-        option_type: str = "call"
+        S: float, K: float, T: float, r: float, sigma: float, option_type: str = "call"
     ) -> Dict[str, float]:
         """
         Calculate all Greeks.
@@ -121,12 +112,7 @@ class BlackScholesModel:
 
 
 def compute_greeks(
-    S: float,
-    K: float,
-    T: float,
-    r: float,
-    sigma: float,
-    option_type: str = "call"
+    S: float, K: float, T: float, r: float, sigma: float, option_type: str = "call"
 ) -> Dict[str, float]:
     """Convenience function to compute Greeks."""
     return BlackScholesModel.greeks(S, K, T, r, sigma, option_type)

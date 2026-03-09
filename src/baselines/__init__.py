@@ -2,9 +2,9 @@
 
 from src.baselines.hedging_strategies import (
     BaseHedgingStrategy,
-    DeltaHedging,
     DeltaGammaHedging,
     DeltaGammaVegaHedging,
+    DeltaHedging,
     MinimumVarianceHedging,
 )
 

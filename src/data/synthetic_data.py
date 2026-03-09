@@ -1,7 +1,8 @@
 """Synthetic data generation for training."""
 
-import numpy as np
 from typing import Tuple
+
+import numpy as np
 
 from src.utils.logger import setup_logger
 

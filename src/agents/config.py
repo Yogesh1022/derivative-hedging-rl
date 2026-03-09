@@ -19,9 +19,8 @@ PPO_CONFIGS = {
         "max_grad_norm": 0.5,
         "policy_kwargs": {
             "net_arch": [dict(pi=[256, 256], vf=[256, 256])],
-        }
+        },
     },
-    
     "fast_learning": {
         "learning_rate": 1e-3,
         "n_steps": 1024,
@@ -35,9 +34,8 @@ PPO_CONFIGS = {
         "max_grad_norm": 0.5,
         "policy_kwargs": {
             "net_arch": [dict(pi=[128, 128], vf=[128, 128])],
-        }
+        },
     },
-    
     "stable": {
         "learning_rate": 1e-4,
         "n_steps": 2048,
@@ -51,7 +49,7 @@ PPO_CONFIGS = {
         "max_grad_norm": 0.3,
         "policy_kwargs": {
             "net_arch": [dict(pi=[256, 256, 128], vf=[256, 256, 128])],
-        }
+        },
     },
 }
 
@@ -69,9 +67,8 @@ SAC_CONFIGS = {
         "ent_coef": "auto",
         "policy_kwargs": {
             "net_arch": [256, 256],
-        }
+        },
     },
-    
     "sample_efficient": {
         "learning_rate": 5e-4,
         "buffer_size": 500000,
@@ -84,9 +81,8 @@ SAC_CONFIGS = {
         "ent_coef": "auto",
         "policy_kwargs": {
             "net_arch": [256, 256],
-        }
+        },
     },
-    
     "deep": {
         "learning_rate": 1e-4,
         "buffer_size": 2000000,
@@ -99,7 +95,7 @@ SAC_CONFIGS = {
         "ent_coef": "auto",
         "policy_kwargs": {
             "net_arch": [512, 512, 256],
-        }
+        },
     },
 }
 
@@ -115,7 +111,6 @@ ENV_CONFIGS = {
         "transaction_cost": 0.0005,
         "risk_penalty": 0.1,
     },
-    
     "medium": {
         "S0": 100.0,
         "K": 100.0,
@@ -126,7 +121,6 @@ ENV_CONFIGS = {
         "transaction_cost": 0.001,
         "risk_penalty": 0.1,
     },
-    
     "hard": {
         "S0": 100.0,
         "K": 100.0,
@@ -137,7 +131,6 @@ ENV_CONFIGS = {
         "transaction_cost": 0.002,
         "risk_penalty": 0.2,
     },
-    
     "realistic": {
         "S0": 100.0,
         "K": 100.0,
@@ -157,19 +150,16 @@ CURRICULUM_SCHEDULES = {
         {"difficulty": "medium", "timesteps": 250000},
         {"difficulty": "hard", "timesteps": 150000},
     ],
-    
     "aggressive": [
         {"difficulty": "easy", "timesteps": 50000},
         {"difficulty": "medium", "timesteps": 150000},
         {"difficulty": "hard", "timesteps": 300000},
     ],
-    
     "cautious": [
         {"difficulty": "easy", "timesteps": 200000},
         {"difficulty": "medium", "timesteps": 400000},
         {"difficulty": "hard", "timesteps": 400000},
     ],
-    
     "quick": [
         {"difficulty": "medium", "timesteps": 100000},
     ],
@@ -187,7 +177,6 @@ OPTUNA_SEARCH_SPACES = {
         "clip_range": {"type": "uniform", "low": 0.1, "high": 0.3},
         "ent_coef": {"type": "uniform", "low": 0.0, "high": 0.1},
     },
-    
     "SAC": {
         "learning_rate": {"type": "loguniform", "low": 1e-5, "high": 1e-3},
         "batch_size": {"type": "categorical", "choices": [64, 128, 256, 512]},
@@ -203,11 +192,11 @@ OPTUNA_SEARCH_SPACES = {
 def get_config(agent_type: str, config_name: str = "default"):
     """
     Get configuration for agent.
-    
+
     Args:
         agent_type: 'PPO' or 'SAC'
         config_name: Configuration name
-        
+
     Returns:
         config: Configuration dictionary
     """

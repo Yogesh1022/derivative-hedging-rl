@@ -9,12 +9,14 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
+)
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import (
     Float,
     ForeignKey,
     Integer,
     String,
     Text,
-    Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship

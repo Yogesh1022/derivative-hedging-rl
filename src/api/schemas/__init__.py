@@ -4,8 +4,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
-
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 # ============================================
 # User Schemas
@@ -30,7 +29,7 @@ class UserUpdate(BaseModel):
 
 class UserInDB(UserBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     is_active: bool
     is_superuser: bool
@@ -88,7 +87,7 @@ class DatasetUpdate(BaseModel):
 
 class Dataset(DatasetBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     start_date: Optional[datetime]
     end_date: Optional[datetime]
@@ -127,7 +126,7 @@ class ExperimentUpdate(BaseModel):
 
 class Experiment(ExperimentBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     user_id: UUID
     dataset_id: Optional[UUID]
@@ -176,7 +175,7 @@ class TrainedModelUpdate(BaseModel):
 
 class TrainedModel(TrainedModelBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     user_id: UUID
     experiment_id: Optional[UUID]
@@ -217,7 +216,7 @@ class EvaluationUpdate(BaseModel):
 
 class Evaluation(EvaluationBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     experiment_id: UUID
     test_start_date: Optional[datetime]
@@ -263,7 +262,7 @@ class MarketDataCreate(MarketDataBase):
 
 class MarketData(MarketDataBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     adjusted_close: Optional[float]
     dividend: Optional[float]

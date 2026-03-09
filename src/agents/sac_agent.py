@@ -7,26 +7,27 @@ sample-efficient for continuous control tasks.
 """
 
 from typing import Any, Dict, Optional, Tuple
+
+import gymnasium as gym
 import numpy as np
 import torch
 from stable_baselines3 import SAC
-from stable_baselines3.common.callbacks import BaseCallback, EvalCallback, CheckpointCallback
+from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback, EvalCallback
+from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.noise import NormalActionNoise
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
-from stable_baselines3.common.monitor import Monitor
-import gymnasium as gym
 
 
 class SACHedgingAgent:
     """
     SAC agent specialized for option hedging tasks.
-    
+
     SAC is particularly well-suited for hedging because:
     1. Off-policy learning enables efficient use of past experiences
     2. Entropy maximization encourages exploration of hedging strategies
     3. Handles continuous action spaces naturally (hedge position adjustments)
     """
-    
+
     def __init__(
         self,
         env: gym.Env,
@@ -49,7 +50,7 @@ class SACHedgingAgent:
     ):
         """
         Initialize SAC agent for hedging.
-        
+
         Args:
             env: Gymnasium environment
             policy: Policy network architecture ('MlpPolicy' for feedforward)
@@ -71,14 +72,14 @@ class SACHedgingAgent:
         """
         self.env = env
         self.seed = seed
-        
+
         # Default policy network architecture
         if policy_kwargs is None:
             policy_kwargs = {
                 "net_arch": [256, 256],
                 "activation_fn": torch.nn.ReLU,
             }
-        
+
         self.model = SAC(
             policy=policy,
             env=env,
@@ -98,9 +99,9 @@ class SACHedgingAgent:
             seed=seed,
             device=device,
         )
-        
+
         self.training_history = []
-    
+
     def train(
         self,
         total_timesteps: int,
@@ -113,7 +114,7 @@ class SACHedgingAgent:
     ) -> "SACHedgingAgent":
         """
         Train the SAC agent.
-        
+
         Args:
             total_timesteps: Total number of environment steps
             eval_env: Environment for evaluation during training
@@ -122,12 +123,12 @@ class SACHedgingAgent:
             log_dir: Directory for logs and checkpoints
             save_freq: Frequency of model checkpoints (in timesteps)
             callbacks: List of additional callbacks
-            
+
         Returns:
             self: Trained agent
         """
         callback_list = callbacks or []
-        
+
         # Add evaluation callback if eval_env provided
         if eval_env is not None and log_dir is not None:
             eval_callback = EvalCallback(
@@ -140,7 +141,7 @@ class SACHedgingAgent:
                 render=False,
             )
             callback_list.append(eval_callback)
-        
+
         # Add checkpoint callback
         if log_dir is not None:
             checkpoint_callback = CheckpointCallback(
@@ -149,16 +150,16 @@ class SACHedgingAgent:
                 name_prefix="sac_hedging",
             )
             callback_list.append(checkpoint_callback)
-        
+
         # Train the model
         self.model.learn(
             total_timesteps=total_timesteps,
             callback=callback_list,
             progress_bar=True,
         )
-        
+
         return self
-    
+
     def predict(
         self,
         observation: np.ndarray,
@@ -167,30 +168,28 @@ class SACHedgingAgent:
     ) -> Tuple[np.ndarray, Optional[Tuple]]:
         """
         Predict action given observation.
-        
+
         Args:
             observation: Current state observation
             deterministic: Whether to use deterministic policy (mean action)
             state: RNN state (not used for MLP policy)
-            
+
         Returns:
             action: Predicted action
             state: Updated RNN state (None for MLP)
         """
-        action, state = self.model.predict(
-            observation, deterministic=deterministic, state=state
-        )
+        action, state = self.model.predict(observation, deterministic=deterministic, state=state)
         return action, state
-    
+
     def save(self, path: str) -> None:
         """Save model to disk."""
         self.model.save(path)
-    
+
     def load(self, path: str) -> "SACHedgingAgent":
         """Load model from disk."""
         self.model = SAC.load(path, env=self.env)
         return self
-    
+
     @staticmethod
     def load_pretrained(
         path: str,
@@ -199,19 +198,19 @@ class SACHedgingAgent:
     ) -> "SACHedgingAgent":
         """
         Load a pre-trained SAC agent.
-        
+
         Args:
             path: Path to saved model
             env: Environment for the agent
             device: Device to load model on
-            
+
         Returns:
             agent: Loaded SAC agent
         """
         agent = SACHedgingAgent(env=env, device=device)
         agent.model = SAC.load(path, env=env, device=device)
         return agent
-    
+
     def get_parameters(self) -> Dict[str, Any]:
         """Get agent hyperparameters."""
         return {

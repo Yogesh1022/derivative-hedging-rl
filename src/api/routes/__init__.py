@@ -2,9 +2,9 @@
 
 from src.api.routes import (
     auth,
+    baselines,
     datasets,
     environments,
-    baselines,
     evaluations,
     experiments,
     health,
